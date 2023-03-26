@@ -1,5 +1,6 @@
 import express from 'express'
 import { apiRouter, apiPrefix } from './api'
+import './core'
 
 export let app = express()
 

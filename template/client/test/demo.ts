@@ -1,4 +1,4 @@
-import { createPost, getPostList, signin, signup } from '../src/sdk'
+import { signup, signin, createPost, getPostList } from '../src/sdk'
 
 async function main() {
   let { token } = await signup({ username: 'alice', password: 'secret' }).catch(
@@ -7,7 +7,6 @@ async function main() {
   console.log({ token })
   for (;;) {
     let newPost = await createPost({
-      token,
       content: 'demo post at ' + new Date(),
     })
     console.log('new post id:', newPost.id)

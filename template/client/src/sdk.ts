@@ -1,17 +1,34 @@
 let api_origin = 'http://localhost:3000/api'
 
+let token = localStorage.getItem('token')
+
+export function clearToken() {
+  token = null
+  localStorage.removeItem('token')
+}
+
 function post(url: string, body: object) {
   return fetch(api_origin + url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Authorization': 'Bearer ' + token
     },
     body: JSON.stringify(body)
   })
     .then(res => res.json())
     .catch(err => ({ error: String(err) }))
-    .then(json => json.error ? Promise.reject(json) : json)
+    .then(json => {
+      if (json.error) {
+        return Promise.reject(json.error)
+      }
+      if (json.token) {
+        token = json.token as string
+        localStorage.setItem('token', token)
+      }
+      return json
+    })
 }
 
 export type SignupInput = {
@@ -37,7 +54,6 @@ export function signin(input: SigninInput): Promise<SigninOutput & { error?: str
 }
 
 export type CreatePostInput = {
-  token: string;
   content: string;
 }
 export type CreatePostOutput = {
