@@ -22,6 +22,28 @@ npx create-rpc [project-name]
 - Auto-storing JWT token
 - Dotenv setup
 
+## Available Commands
+
+Inside the server directory, you can run several commands:
+
+```
+npm start
+  Starts the auto-refresh development server.
+  It auto generates the client/src/sdk.ts based on the APIs defined in server/src/core.ts.
+
+npm run db:setup
+  Migrate the database schema to latest version.
+
+npm run db:plan
+  Auto-generate migration based on erd.txt and current database schema.
+
+npm run db:update
+  Apply the new migration plan, and update the proxy.ts based on the erd.txt.
+
+npm run build
+  Builds the web project into 'build' folder.
+```
+
 ## License
 
 This project is licensed with [BSD-2-Clause](./LICENSE)

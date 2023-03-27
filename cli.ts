@@ -9,24 +9,31 @@ async function main() {
   let srcDir = join(__dirname, 'template')
   console.log('Copying rpc template to:', dest, '...')
   await copyTemplate({ srcDir, dest, updatePackageJson: false })
+
+  let readme = readFileSync(join(__dirname, 'README.md')).toString()
+
+  let idx = readme.indexOf(
+    'Inside the server directory, you can run several commands:',
+  )
+
+  let commandsMessage = readme
+    .slice(idx)
+    .split('```')[1]
+    .trim()
+    .split('\n')
+    .map(line => {
+      line = line.replace('\r', '')
+      if (line.trim().length === 0) {
+        return line
+      }
+      return '  ' + line
+    })
+    .join('\n')
+
   let helpMessage = `
 Inside the server directory, you can run several commands:
 
-  npm start
-    Starts the auto-refresh development server.
-    It auto generates the client/src/sdk.ts based on the APIs defined in server/src/core.ts.
-
-  npm run db:setup
-    Migrate the database schema to latest version.
-
-  npm run db:plan
-    Auto-generate migration based on erd.txt and current database schema.
-
-  npm run db:update
-    Apply the new migration plan, and update the proxy.ts based on the erd.txt.
-
-  npm run build
-    Builds the web project into 'build' folder.
+${commandsMessage}
 
 
 Get started by typing:
