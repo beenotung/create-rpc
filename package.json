@@ -21,7 +21,8 @@
   ],
   "scripts": {
     "test": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "tsc"
   },
   "dependencies": {
     "npm-init-helper": "^1.4.0"
