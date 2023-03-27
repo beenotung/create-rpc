@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { writeFileSync } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import { copyTemplate, getDest } from 'npm-init-helper'
 import { join } from 'path'
 
@@ -45,6 +45,14 @@ Installation Alternatives:
   or
   npm install
 `
+
+  writeFileSync(join(dest, 'help.txt'), helpMessage.trimStart())
+
+  let envCode = readFileSync(join(dest, 'server', '.env.example'))
+    .toString()
+    .replace('JWT_SECRET=', 'JWT_SECRET=replaceThisToASecret')
+  writeFileSync(join(dest, 'server', '.env'), envCode)
+
   console.log(
     `
 Done.
@@ -54,7 +62,6 @@ Created ${dest}/server and ${dest}/client.
 ${helpMessage.trim()}
 `.trim(),
   )
-  writeFileSync(join(dest, 'help.txt'), helpMessage.trimStart())
 }
 
 main().catch(e => console.error(e))
