@@ -15,6 +15,9 @@
   "author": "Beeno Tung <aabbcc1241@yahoo.com.hk> (https://beeno-tung.surge.sh)",
   "license": "BSD-2-Clause",
   "main": "cli.js",
+  "bin": {
+    "create-rpc": "cli.js"
+  },
   "files": [
     "template",
     "cli.js"
