@@ -1,12 +1,22 @@
 {
   "name": "create-rpc",
   "version": "0.0.0",
-  "description": "",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "description": "Starter template of Typescript web server with auto-generated client SDK using RPC with ajax.",
+  "keywords": [
+    "RPC",
+    "code-generation",
+    "SDK",
+    "starter",
+    "starter-kit",
+    "cli",
+    "template",
+    "typescript"
+  ],
+  "author": "Beeno Tung <aabbcc1241@yahoo.com.hk> (https://beeno-tung.surge.sh)",
+  "license": "BSD-2-Clause",
   "main": "cli.js",
   "files": [
+    "template",
     "cli.js"
   ],
   "scripts": {
