@@ -4,15 +4,16 @@ import { genTsType } from 'gen-ts-type'
 import { env } from './env'
 import debug from 'debug'
 import { JWTPayload, getJWT } from './jwt'
+import { join } from 'path'
 
-let log = debug('api')
-log.enabled = true
+export function defModule() {
+  let log = debug('api')
+  log.enabled = true
 
-export let apiRouter = Router()
+  let router = Router()
+  let apiPrefix = '/api'
 
-export let apiPrefix = '/api'
-
-let code = `
+  let code = `
 let api_origin = '${env.ORIGIN}${apiPrefix}'
 
 let store = typeof window == 'undefined' ? null : localStorage
@@ -53,61 +54,69 @@ function post(url: string, body: object, token?: string) {
 }
 `
 
-export function defAPI<Input, Output>(
-  input: {
-    name: string
-    sampleInput: Input
-    sampleOutput: Output
-  } & (
-    | {
-        jwt: true
-        fn: (input: Input, jwt: JWTPayload) => Output | Promise<Output>
-      }
-    | {
-        jwt?: false
-        fn: (input: Input) => Output | Promise<Output>
-      }
-  ),
-) {
-  let name = input.name
-  let Name = name[0].toUpperCase() + name.slice(1)
-  let Input = genTsType(input.sampleInput, { format: true })
-  let Output = genTsType(input.sampleOutput, { format: true })
-  code += `
+  function defAPI<Input, Output>(
+    input: {
+      name: string
+      sampleInput: Input
+      sampleOutput: Output
+    } & (
+      | {
+          jwt: true
+          fn: (input: Input, jwt: JWTPayload) => Output | Promise<Output>
+        }
+      | {
+          jwt?: false
+          fn: (input: Input) => Output | Promise<Output>
+        }
+    ),
+  ) {
+    let name = input.name
+    let Name = name[0].toUpperCase() + name.slice(1)
+    let Input = genTsType(input.sampleInput, { format: true })
+    let Output = genTsType(input.sampleOutput, { format: true })
+    code += `
 export type ${Name}Input = ${Input}
 export type ${Name}Output = ${Output}`
-  if (input.jwt) {
-    code += `
+    if (input.jwt) {
+      code += `
 export function ${name}(input: ${Name}Input & { token: string }): Promise<${Name}Output & { error?: string }> {
   let { token, ...body } = input
 	return post('/${name}', body, token)
 }
 `
-  } else {
-    code += `
+    } else {
+      code += `
 export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: string }> {
 	return post('/${name}', input)
 }
 `
-  }
-  apiRouter.post('/' + name, async (req, res) => {
-    log(name, req.body)
-    try {
-      let json = input.jwt
-        ? await input.fn(req.body, getJWT(req))
-        : await input.fn(req.body)
-      res.json(json)
-    } catch (error: any) {
-      let statusCode = error.statusCode || 500
-      res.status(statusCode)
-      res.json({ error: String(error) })
     }
-  })
-}
+    router.post('/' + name, async (req, res) => {
+      log(name, req.body)
+      try {
+        let json = input.jwt
+          ? await input.fn(req.body, getJWT(req))
+          : await input.fn(req.body)
+        res.json(json)
+      } catch (error: any) {
+        let statusCode = error.statusCode || 500
+        res.status(statusCode)
+        res.json({ error: String(error) })
+      }
+    })
+  }
 
-export function saveSDK() {
-  let content = code.trim() + '\n'
-  let file = '../client/src/sdk.ts'
-  writeFileSync(file, content)
-  console.log('saved to', file)
+  function saveSDK() {
+    let content = code.trim() + '\n'
+    let file = join('..', 'client', 'src', 'sdk.ts')
+    writeFileSync(file, content)
+    console.log('saved to', file)
+  }
+
+  return {
+    defAPI,
+    saveSDK,
+    apiPrefix,
+    router,
+  }
 }

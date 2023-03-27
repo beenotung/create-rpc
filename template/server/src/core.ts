@@ -1,10 +1,14 @@
 import { find } from 'better-sqlite3-proxy'
-import { defAPI, saveSDK } from './api'
+import { defModule } from './api'
 import { db } from './db'
 import { HTTPError } from './error'
 import { hashPassword, comparePassword } from './hash'
 import { encodeJWT } from './jwt'
 import { proxy } from './proxy'
+
+export let core = defModule()
+
+let { defAPI } = core
 
 defAPI({
   name: 'signup',
@@ -104,4 +108,4 @@ defAPI({
   },
 })
 
-saveSDK()
+core.saveSDK()
