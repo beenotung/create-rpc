@@ -2,7 +2,15 @@
 
 Starter template of Typescript web server with auto-generated client SDK using RPC with ajax.
 
-[![npm Package Version](https://img.shields.io/npm/v/create-rpc.svg?maxAge=3600)](https://www.npmjs.com/package/create-rpc)
+[![npm Package Version](https://img.shields.io/npm/v/create-rpc.svg)](https://www.npmjs.com/package/create-rpc)
+
+## Usage
+
+```bash
+npm init rpc [project-name]
+# or
+npx create-rpc [project-name]
+```
 
 ## Template Features
 
