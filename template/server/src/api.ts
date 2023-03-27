@@ -15,14 +15,20 @@ export let apiPrefix = '/api'
 let code = `
 let api_origin = '${env.ORIGIN}${apiPrefix}'
 
-let token = localStorage.getItem('token')
+let store = typeof window == 'undefined' ? null : localStorage
+
+let token = store?.getItem('token')
+
+export function getToken() {
+  return token
+}
 
 export function clearToken() {
   token = null
-  localStorage.removeItem('token')
+  store?.removeItem('token')
 }
 
-function post(url: string, body: object) {
+function post(url: string, body: object, token?: string) {
   return fetch(api_origin + url, {
     method: 'POST',
     headers: {
@@ -40,7 +46,7 @@ function post(url: string, body: object) {
       }
       if (json.token) {
         token = json.token as string
-        localStorage.setItem('token', token)
+        store?.setItem('token', token)
       }
       return json
     })
@@ -69,11 +75,21 @@ export function defAPI<Input, Output>(
   let Output = genTsType(input.sampleOutput, { format: true })
   code += `
 export type ${Name}Input = ${Input}
-export type ${Name}Output = ${Output}
+export type ${Name}Output = ${Output}`
+  if (input.jwt) {
+    code += `
+export function ${name}(input: ${Name}Input & { token: string }): Promise<${Name}Output & { error?: string }> {
+  let { token, ...body } = input
+	return post('/${name}', body, token)
+}
+`
+  } else {
+    code += `
 export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: string }> {
 	return post('/${name}', input)
 }
 `
+  }
   apiRouter.post('/' + name, async (req, res) => {
     log(name, req.body)
     try {

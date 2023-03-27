@@ -70,19 +70,37 @@ where content like :keyword
 order by post.id asc
 limit :limit
 `)
+let count_post_list = db
+  .prepare(
+    /* sql */ `
+select
+  count(*) as count
+from post
+inner join user on user.id = post.user_id
+where content like :keyword
+  and post.id > :last_post_id
+`,
+  )
+  .pluck()
 defAPI({
   name: 'getPostList',
   sampleInput: { limit: 5, last_post_id: 0, keyword: 'hello' },
   sampleOutput: {
     posts: [{ id: 1, user_id: 1, username: 'alice', content: 'hello world' }],
+    remains: 3,
   },
   fn(input) {
     let posts = select_post_list.all({
       keyword: '%' + input.keyword + '%',
+      last_post_id: input.last_post_id,
       limit: Math.min(25, input.limit),
+    })
+    let remains = count_post_list.get({
+      keyword: '%' + input.keyword + '%',
       last_post_id: input.last_post_id,
     })
-    return { posts }
+    remains -= posts.length
+    return { posts, remains }
   },
 })
 

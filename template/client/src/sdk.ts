@@ -1,13 +1,19 @@
 let api_origin = 'http://localhost:3000/api'
 
-let token = localStorage.getItem('token')
+let store = typeof window == 'undefined' ? null : localStorage
+
+let token = store?.getItem('token')
+
+export function getToken() {
+  return token
+}
 
 export function clearToken() {
   token = null
-  localStorage.removeItem('token')
+  store?.removeItem('token')
 }
 
-function post(url: string, body: object) {
+function post(url: string, body: object, token?: string) {
   return fetch(api_origin + url, {
     method: 'POST',
     headers: {
@@ -25,7 +31,7 @@ function post(url: string, body: object) {
       }
       if (json.token) {
         token = json.token as string
-        localStorage.setItem('token', token)
+        store?.setItem('token', token)
       }
       return json
     })
@@ -59,8 +65,9 @@ export type CreatePostInput = {
 export type CreatePostOutput = {
   id: number;
 }
-export function createPost(input: CreatePostInput): Promise<CreatePostOutput & { error?: string }> {
-	return post('/createPost', input)
+export function createPost(input: CreatePostInput & { token: string }): Promise<CreatePostOutput & { error?: string }> {
+  let { token, ...body } = input
+	return post('/createPost', body, token)
 }
 
 export type GetPostListInput = {
@@ -75,6 +82,7 @@ export type GetPostListOutput = {
     username: string;
     content: string;
   }>;
+  remains: number;
 }
 export function getPostList(input: GetPostListInput): Promise<GetPostListOutput & { error?: string }> {
 	return post('/getPostList', input)
