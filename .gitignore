@@ -2,4 +2,5 @@ node_modules/
 pnpm-lock.yaml
 *.tgz
 cli.js
+cli.d.ts
 tsconfig.tsbuildinfo
