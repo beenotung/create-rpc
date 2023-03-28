@@ -29,13 +29,13 @@ export function clearToken() {
   store?.removeItem('token')
 }
 
-function post(url: string, body: object, token?: string) {
+function post(url: string, body: object, token_?: string) {
   return fetch(api_origin + url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + token_
     },
     body: JSON.stringify(body)
   })
