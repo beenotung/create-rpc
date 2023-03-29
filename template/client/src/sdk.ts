@@ -13,13 +13,13 @@ export function clearToken() {
   store?.removeItem('token')
 }
 
-function post(url: string, body: object, token?: string) {
+function post(url: string, body: object, token_?: string) {
   return fetch(api_origin + url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + token_
     },
     body: JSON.stringify(body)
   })
@@ -59,31 +59,21 @@ export function signin(input: SigninInput): Promise<SigninOutput & { error?: str
 	return post('/signin', input)
 }
 
-export type CreatePostInput = {
-  content: string;
-}
-export type CreatePostOutput = {
-  id: number;
-}
-export function createPost(input: CreatePostInput & { token: string }): Promise<CreatePostOutput & { error?: string }> {
-  let { token, ...body } = input
-	return post('/createPost', body, token)
-}
-
-export type GetPostListInput = {
+export type GetRecentUserListInput = {
   limit: number;
-  last_post_id: number;
+  last_log_id: number;
   keyword: string;
 }
-export type GetPostListOutput = {
-  posts: Array<{
+export type GetRecentUserListOutput = {
+  users: Array<{
     id: number;
     user_id: number;
     username: string;
-    content: string;
+    created_at: string;
   }>;
   remains: number;
 }
-export function getPostList(input: GetPostListInput): Promise<GetPostListOutput & { error?: string }> {
-	return post('/getPostList', input)
+export function getRecentUserList(input: GetRecentUserListInput & { token: string }): Promise<GetRecentUserListOutput & { error?: string }> {
+  let { token, ...body } = input
+	return post('/getRecentUserList', body, token)
 }

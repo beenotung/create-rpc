@@ -40,6 +40,9 @@ npm run db:plan
 npm run db:update
   Apply the new migration plan, and update the proxy.ts based on the erd.txt.
 
+npm run db:seed
+  Populate the database with sample data.
+
 npm run build
   Builds the web project into 'dist' folder.
 ```

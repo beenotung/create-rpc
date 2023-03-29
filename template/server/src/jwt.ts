@@ -6,6 +6,7 @@ import { Request } from 'express'
 
 export type JWTPayload = {
   id: number
+  is_admin: boolean
 }
 
 const permit = new Bearer({ query: 'access_token' })

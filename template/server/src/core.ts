@@ -3,7 +3,7 @@ import { defModule } from './api'
 import { db } from './db'
 import { HttpError } from './error'
 import { hashPassword, comparePassword } from './hash'
-import { encodeJWT } from './jwt'
+import { encodeJWT, JWTPayload } from './jwt'
 import { proxy } from './proxy'
 
 export let core = defModule()
@@ -21,6 +21,11 @@ function checkUserId(input: { username: string; password: string }) {
     throw new HttpError(400, 'password must not exceed 256 characters')
 }
 
+function checkAdmin(jwt: JWTPayload) {
+  if (!jwt.is_admin)
+    throw new HttpError(403, 'This API is only accessible by admin')
+}
+
 defAPI({
   name: 'signup',
   sampleInput: {
@@ -35,8 +40,9 @@ defAPI({
     let id = proxy.user.push({
       username: input.username,
       password_hash: await hashPassword(input.password),
+      is_admin: false,
     })
-    let token = encodeJWT({ id })
+    let token = encodeJWT({ id, is_admin: false })
     return { token }
   },
 })
@@ -57,67 +63,66 @@ defAPI({
       password_hash: user.password_hash,
     })
     if (!matched) throw new HttpError(401, 'wrong username or password')
-    let token = encodeJWT({ id: user.id! })
+    let token = encodeJWT({ id: user.id!, is_admin: user.is_admin })
     return { token }
   },
 })
 
-defAPI({
-  name: 'createPost',
-  sampleInput: { content: 'hello world' },
-  sampleOutput: { id: 1 },
-  jwt: true,
-  fn(input, jwt) {
-    let user_id = jwt.id
-    let id = proxy.post.push({ user_id, content: input.content })
-    return { id }
-  },
-})
-
-let select_post_list = db.prepare(/* sql */ `
+let select_recent_log = db.prepare(/* sql */ `
 select
-  post.id
-, post.user_id
+  log.id
+, log.user_id
 , user.username
-, post.content
-from post
-inner join user on user.id = post.user_id
-where content like :keyword
-  and post.id > :last_post_id
-order by post.id asc
+, log.created_at as timestamp
+, log.rpc
+, log.input
+from user
+inner join log on log.user_id = user.id
+where user.username like :keyword
+  and log.id < :last_log_id
+order by log.id desc
 limit :limit
 `)
-let count_post_list = db
+let count_recent_log = db
   .prepare(
     /* sql */ `
 select
   count(*) as count
-from post
-inner join user on user.id = post.user_id
-where content like :keyword
-  and post.id > :last_post_id
+from user
+inner join log on log.user_id = user.id
+where user.username like :keyword
+  and log.id < :last_log_id
 `,
   )
   .pluck()
 defAPI({
-  name: 'getPostList',
-  sampleInput: { limit: 5, last_post_id: 0, keyword: 'hello' },
+  name: 'getRecentUserList',
+  jwt: true,
+  sampleInput: { limit: 5, last_log_id: 0, keyword: 'alice' },
   sampleOutput: {
-    posts: [{ id: 1, user_id: 1, username: 'alice', content: 'hello world' }],
+    users: [
+      {
+        id: 1,
+        user_id: 1,
+        username: 'alice',
+        created_at: '2023-03-29 08:00:00',
+      },
+    ],
     remains: 3,
   },
-  fn(input) {
-    let posts = select_post_list.all({
+  fn(input, jwt) {
+    checkAdmin(jwt)
+    let users = select_recent_log.all({
       keyword: '%' + input.keyword + '%',
-      last_post_id: input.last_post_id,
+      last_log_id: input.last_log_id,
       limit: Math.min(25, input.limit),
     })
-    let remains = count_post_list.get({
+    let remains = count_recent_log.get({
       keyword: '%' + input.keyword + '%',
-      last_post_id: input.last_post_id,
+      last_log_id: input.last_log_id,
     })
-    remains -= posts.length
-    return { posts, remains }
+    remains -= users.length
+    return { users, remains }
   },
 })
 

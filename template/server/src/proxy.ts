@@ -5,25 +5,29 @@ export type User = {
   id?: number | null
   username: string
   password_hash: string
+  is_admin: boolean
 }
 
-export type Post = {
+export type Log = {
   id?: number | null
-  content: string
-  user_id: number
+  user_id: number | null
   user?: User
+  rpc: string
+  input: string // json
+  output: string // json
+  time_used: number
 }
 
 export type DBProxy = {
   user: User[]
-  post: Post[]
+  log: Log[]
 }
 
 export let proxy = proxySchema<DBProxy>({
   db,
   tableFields: {
     user: [],
-    post: [
+    log: [
       /* foreign references */
       ['user', { field: 'user_id', table: 'user' }],
     ],

@@ -1,23 +1,15 @@
-import { signup, signin, createPost, getPostList } from '../src/sdk'
+import { signin, getRecentUserList, getToken } from '../src/sdk'
 
 async function main() {
-  let { token } = await signup({ username: 'alice', password: 'secret' }).catch(
-    () => signin({ username: 'alice', password: 'secret' }),
-  )
-  console.log({ token })
-  for (;;) {
-    let newPost = await createPost({
-      token,
-      content: 'demo post at ' + new Date(),
-    })
-    console.log('new post id:', newPost.id)
-    if (newPost.id > 10) break
-  }
-  let { posts, remains } = await getPostList({
-    keyword: 'demo',
-    last_post_id: 5,
+  await signin({ username: 'alice', password: 'secret' })
+  await signin({ username: 'admin', password: 'secret' })
+
+  let { users, remains } = await getRecentUserList({
+    keyword: 'a',
+    last_log_id: Number.MAX_SAFE_INTEGER,
     limit: 3,
+    token: getToken()!,
   })
-  console.log({ posts, remains })
+  console.log({ users, remains })
 }
 main().catch(e => console.error(e))

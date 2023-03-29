@@ -5,6 +5,7 @@ import { env } from './env'
 import debug from 'debug'
 import { JWTPayload, getJWT } from './jwt'
 import { join } from 'path'
+import { proxy } from './proxy'
 
 export function defModule() {
   let log = debug('api')
@@ -93,16 +94,31 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
     }
     router.post('/' + name, async (req, res) => {
       log(name, req.body)
+      let startTime = Date.now()
+      let json: Output | { error: string }
+      let user_id: number | null = null
       try {
-        let json = input.jwt
-          ? await input.fn(req.body, getJWT(req))
-          : await input.fn(req.body)
-        res.json(json)
+        if (input.jwt) {
+          let jwt = getJWT(req)
+          user_id = jwt.id
+          json = await input.fn(req.body, jwt)
+        } else {
+          json = await input.fn(req.body)
+        }
       } catch (error: any) {
         let statusCode = error.statusCode || 500
         res.status(statusCode)
-        res.json({ error: String(error) })
+        json = { error: String(error) }
       }
+      let endTime = Date.now()
+      res.json(json)
+      proxy.log.push({
+        rpc: name,
+        input: JSON.stringify(req.body),
+        output: JSON.stringify(json),
+        time_used: endTime - startTime,
+        user_id,
+      })
     })
   }
 

@@ -7,6 +7,7 @@
     "db:setup": "knex migrate:latest",
     "db:plan": "auto-migrate db.sqlite3 < erd.txt",
     "db:update": "knex migrate:latest && erd-to-proxy < erd.txt > src/proxy.ts",
+    "db:seed": "ts-node seed.ts",
     "start": "ts-node-dev src/main.ts",
     "test": "tsc --noEmit",
     "build": "tsc -p ."

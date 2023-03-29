@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
       table.increments('id')
       table.text('username').notNullable().unique()
       table.text('password_hash').notNullable()
+      table.boolean('is_admin').notNullable()
       table.timestamps(false, true)
     })
   }
