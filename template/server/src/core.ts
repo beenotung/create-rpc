@@ -10,6 +10,17 @@ export let core = defModule()
 
 let { defAPI } = core
 
+function checkUserId(input: { username: string; password: string }) {
+  if (input.username.length < 1)
+    throw new HttpError(400, 'username must be at least one character')
+  if (input.username.length > 32)
+    throw new HttpError(400, 'username must not exceed 32 characters')
+  if (input.password.length < 6)
+    throw new HttpError(400, 'password must be at least 6 characters')
+  if (input.password.length > 256)
+    throw new HttpError(400, 'password must not exceed 256 characters')
+}
+
 defAPI({
   name: 'signup',
   sampleInput: {
@@ -18,6 +29,7 @@ defAPI({
   },
   sampleOutput: { token: 'jwt' },
   fn: async input => {
+    checkUserId(input)
     let user = find(proxy.user, { username: input.username })
     if (user) throw new HttpError(409, 'this username is already in use')
     let id = proxy.user.push({
@@ -37,6 +49,7 @@ defAPI({
   },
   sampleOutput: { token: 'jwt' },
   async fn(input) {
+    checkUserId(input)
     let user = find(proxy.user, { username: input.username })
     if (!user) throw new HttpError(404, 'this username is not used')
     let matched = await comparePassword({
