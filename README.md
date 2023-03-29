@@ -41,7 +41,7 @@ npm run db:update
   Apply the new migration plan, and update the proxy.ts based on the erd.txt.
 
 npm run db:seed
-  Populate the database with sample data.
+  Populate the database with sample data in server/seed.ts.
 
 npm run build
   Builds the web project into 'dist' folder.
