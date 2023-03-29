@@ -4,3 +4,4 @@ pnpm-lock.yaml
 cli.js
 cli.d.ts
 tsconfig.tsbuildinfo
+dist
