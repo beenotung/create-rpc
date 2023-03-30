@@ -63,11 +63,11 @@ function post(url: string, body: object, token_?: string) {
     } & (
       | {
           jwt: true
-          fn: (input: Input, jwt: JWTPayload) => Output | Promise<Output>
+          fn?: (input: Input, jwt: JWTPayload) => Output | Promise<Output>
         }
       | {
           jwt?: false
-          fn: (input: Input) => Output | Promise<Output>
+          fn?: (input: Input) => Output | Promise<Output>
         }
     ),
   ) {
@@ -94,6 +94,11 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
     }
     router.post('/' + name, async (req, res) => {
       log(name, req.body)
+      if (!input.fn) {
+        res.status(501)
+        res.json(input.sampleOutput)
+        return
+      }
       let startTime = Date.now()
       let json: Output | { error: string }
       let user_id: number | null = null
