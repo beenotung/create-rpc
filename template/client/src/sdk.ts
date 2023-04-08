@@ -77,3 +77,13 @@ export function getRecentUserList(input: GetRecentUserListInput & { token: strin
   let { token, ...body } = input
 	return post('/getRecentUserList', body, token)
 }
+
+export type GreetInput = {
+  name: string;
+}
+export type GreetOutput = {
+  message: string;
+}
+export function greet(input: GreetInput): Promise<GreetOutput & { error?: string }> {
+	return post('/greet', input)
+}

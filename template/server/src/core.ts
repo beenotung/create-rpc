@@ -126,4 +126,14 @@ defAPI({
   },
 })
 
+// a shorter api for easy copy-paste into new APIs
+defAPI({
+  name: 'greet',
+  sampleInput: { name: 'world' },
+  sampleOutput: { message: 'hello world' },
+  fn(input) {
+    return { message: 'hello ' + input.name }
+  },
+})
+
 core.saveSDK()
