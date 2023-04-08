@@ -35,7 +35,7 @@
   "scripts": {
     "test": "tsc --noEmit",
     "build": "tsc && bash scripts/cp-gitignore",
-    "prepublishOnly": "tsc"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "npm-init-helper": "^1.4.0"
