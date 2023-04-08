@@ -32,7 +32,7 @@ defAPI({
     username: 'alice',
     password: 'secret',
   },
-  sampleOutput: { token: 'jwt' },
+  sampleOutput: { token: 'a-jwt-string' },
   fn: async input => {
     checkUserId(input)
     let user = find(proxy.user, { username: input.username })
@@ -53,7 +53,7 @@ defAPI({
     username: 'alice',
     password: 'secret',
   },
-  sampleOutput: { token: 'jwt' },
+  sampleOutput: { token: 'a-jwt-string' },
   async fn(input) {
     checkUserId(input)
     let user = find(proxy.user, { username: input.username })
