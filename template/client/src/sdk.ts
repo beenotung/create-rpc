@@ -1,3 +1,4 @@
+export let server_origin = 'http://localhost:3000'
 let api_origin = 'http://localhost:3000/api'
 
 let store = typeof window == 'undefined' ? null : localStorage

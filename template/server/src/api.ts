@@ -15,6 +15,7 @@ export function defModule() {
   let apiPrefix = '/api'
 
   let code = `
+export let server_origin = '${env.ORIGIN}'
 let api_origin = '${env.ORIGIN}${apiPrefix}'
 
 let store = typeof window == 'undefined' ? null : localStorage
