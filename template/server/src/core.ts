@@ -6,8 +6,7 @@ import { hashPassword, comparePassword } from './hash'
 import { encodeJWT, JWTPayload } from './jwt'
 import { proxy } from './proxy'
 
-export let core = defModule()
-
+let core = defModule()
 let { defAPI } = core
 
 function checkUserId(input: { username: string; password: string }) {
@@ -137,3 +136,5 @@ defAPI({
 })
 
 core.saveSDK()
+
+export default core
