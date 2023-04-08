@@ -37,26 +37,26 @@ function post(url: string, body: object, token_?: string) {
     })
 }
 
-export type SignupInput = {
+export type RegisterInput = {
   username: string;
   password: string;
 }
-export type SignupOutput = {
+export type RegisterOutput = {
   token: string;
 }
-export function signup(input: SignupInput): Promise<SignupOutput & { error?: string }> {
-	return post('/signup', input)
+export function register(input: RegisterInput): Promise<RegisterOutput & { error?: string }> {
+	return post('/register', input)
 }
 
-export type SigninInput = {
+export type LoginInput = {
   username: string;
   password: string;
 }
-export type SigninOutput = {
+export type LoginOutput = {
   token: string;
 }
-export function signin(input: SigninInput): Promise<SigninOutput & { error?: string }> {
-	return post('/signin', input)
+export function login(input: LoginInput): Promise<LoginOutput & { error?: string }> {
+	return post('/login', input)
 }
 
 export type GetRecentUserListInput = {

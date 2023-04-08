@@ -27,7 +27,7 @@ function checkAdmin(jwt: JWTPayload) {
 }
 
 defAPI({
-  name: 'signup',
+  name: 'register',
   sampleInput: {
     username: 'alice',
     password: 'secret',
@@ -48,7 +48,7 @@ defAPI({
 })
 
 defAPI({
-  name: 'signin',
+  name: 'login',
   sampleInput: {
     username: 'alice',
     password: 'secret',
