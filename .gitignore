@@ -5,3 +5,4 @@ cli.js
 cli.d.ts
 tsconfig.tsbuildinfo
 dist
+gitignore.txt

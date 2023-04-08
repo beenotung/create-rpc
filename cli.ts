@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'fs'
 import { copyTemplate, getDest } from 'npm-init-helper'
 import { join } from 'path'
 
@@ -60,6 +60,9 @@ Installation Alternatives:
     .replace('JWT_SECRET=', 'JWT_SECRET=replaceThisToASecret')
   writeFileSync(join(dest, 'server', '.env'), envCode)
 
+  rename_gitignore(join(dest, 'server'))
+  rename_gitignore(join(dest, 'client'))
+
   console.log(
     `
 Done.
@@ -69,6 +72,13 @@ Created ${dest}/server and ${dest}/client.
 ${helpMessage.trim()}
 `.trim(),
   )
+}
+
+function rename_gitignore(dir: string) {
+  let src = join(dir, 'gitignore.txt')
+  if (!existsSync(src)) return
+  let dest = join(dir, '.gitignore')
+  renameSync(src, dest)
 }
 
 main().catch(e => console.error(e))

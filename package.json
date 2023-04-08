@@ -34,7 +34,7 @@
   ],
   "scripts": {
     "test": "tsc --noEmit",
-    "build": "tsc",
+    "build": "tsc && bash scripts/cp-gitignore",
     "prepublishOnly": "tsc"
   },
   "dependencies": {
