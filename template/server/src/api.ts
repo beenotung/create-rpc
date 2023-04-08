@@ -7,12 +7,12 @@ import { JWTPayload, getJWT } from './jwt'
 import { join } from 'path'
 import { proxy } from './proxy'
 
-export function defModule() {
+export function defModule(options?: { apiPrefix?: string }) {
   let log = debug('api')
   log.enabled = true
 
   let router = Router()
-  let apiPrefix = '/api'
+  let apiPrefix = options?.apiPrefix || '/api'
 
   let code = `
 export let server_origin = '${env.ORIGIN}'
