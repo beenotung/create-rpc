@@ -119,7 +119,7 @@ defAPI({
     let remains = count_recent_log.get({
       keyword: '%' + input.keyword + '%',
       last_log_id: input.last_log_id,
-    })
+    }) as number
     remains -= users.length
     return { users, remains }
   },
