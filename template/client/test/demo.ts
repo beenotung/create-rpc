@@ -1,8 +1,8 @@
-import { signin, getRecentUserList, getToken } from '../src/sdk'
+import { getRecentUserList, getToken, login } from '../src/sdk'
 
 async function main() {
-  await signin({ username: 'alice', password: 'secret' })
-  await signin({ username: 'admin', password: 'secret' })
+  await login({ username: 'alice', password: 'secret' })
+  await login({ username: 'admin', password: 'secret' })
 
   let { users, remains } = await getRecentUserList({
     keyword: 'a',
