@@ -15,6 +15,7 @@ npx create-rpc [project-name]
 ## Template Features
 
 - Auto-generate client SDK in Typescript
+- Auto apply runtime type checking on input data
 - Auto-generate (knex) database migration with quick-erd
 - Typed array-like ORM with better-sqlite3-proxy
 - Hashing password with bcrypt
