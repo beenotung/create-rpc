@@ -1,6 +1,8 @@
 import { getRecentUserList, getToken, login } from '../src/sdk'
 
 async function main() {
+  // console.log(await login({} as any)) // server will reject with TypeError
+
   await login({ username: 'alice', password: 'secret' })
   await login({ username: 'admin', password: 'secret' })
 
