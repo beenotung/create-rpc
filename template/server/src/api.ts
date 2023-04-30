@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { writeFileSync } from 'fs'
 import { genTsType } from 'gen-ts-type'
+import { checkTsType } from 'ts-type-check'
 import { env } from './env'
 import debug from 'debug'
 import { JWTPayload, getJWT } from './jwt'
@@ -105,6 +106,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       let json: Output | { error: string }
       let user_id: number | null = null
       try {
+        checkTsType(Input, req.body)
         if (input.jwt) {
           let jwt = getJWT(req)
           user_id = jwt.id
