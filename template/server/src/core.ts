@@ -9,6 +9,15 @@ import { proxy } from './proxy'
 let core = defModule()
 let { defAPI } = core
 
+defAPI({
+  name: 'greet',
+  sampleInput: { name: 'world' },
+  sampleOutput: { message: 'hello world' },
+  fn(input) {
+    return { message: 'hello ' + input.name }
+  },
+})
+
 function checkUserId(input: { username: string; password: string }) {
   if (input.username.length < 1)
     throw new HttpError(400, 'username must be at least one character')
@@ -127,12 +136,12 @@ defAPI({
 
 // a shorter api for easy copy-paste into new APIs
 defAPI({
-  name: 'greet',
-  sampleInput: { name: 'world' },
-  sampleOutput: { message: 'hello world' },
-  fn(input) {
-    return { message: 'hello ' + input.name }
-  },
+  name: 'demo',
+  sampleInput: {},
+  sampleOutput: {},
+  // fn(input) {
+  //   return {  }
+  // },
 })
 
 core.saveSDK()

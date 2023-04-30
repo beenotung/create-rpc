@@ -39,6 +39,16 @@ function post(url: string, body: object, token_?: string) {
     })
 }
 
+export type GreetInput = {
+  name: string;
+}
+export type GreetOutput = {
+  message: string;
+}
+export function greet(input: GreetInput): Promise<GreetOutput & { error?: string }> {
+	return post('/greet', input)
+}
+
 export type RegisterInput = {
   username: string;
   password: string;
@@ -80,12 +90,10 @@ export function getRecentUserList(input: GetRecentUserListInput & { token: strin
 	return post('/getRecentUserList', body, token)
 }
 
-export type GreetInput = {
-  name: string;
+export type DemoInput = {
 }
-export type GreetOutput = {
-  message: string;
+export type DemoOutput = {
 }
-export function greet(input: GreetInput): Promise<GreetOutput & { error?: string }> {
-	return post('/greet', input)
+export function demo(input: DemoInput): Promise<DemoOutput & { error?: string }> {
+	return post('/demo', input)
 }
