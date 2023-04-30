@@ -2,15 +2,15 @@ import { proxySchema } from 'better-sqlite3-proxy'
 import { db } from './db'
 
 export type User = {
-  id?: number | null
+  id?: null | number
   username: string
   password_hash: string
   is_admin: boolean
 }
 
 export type Log = {
-  id?: number | null
-  user_id: number | null
+  id?: null | number
+  user_id: null | number
   user?: User
   rpc: string
   input: string // json
