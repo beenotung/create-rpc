@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "db:setup": "knex migrate:latest",
+    "db:setup": "knex migrate:latest && ts-node seed.ts",
     "db:plan": "auto-migrate db.sqlite3 < erd.txt",
     "db:update": "knex migrate:latest && erd-to-proxy < erd.txt > src/proxy.ts",
     "db:seed": "ts-node seed.ts",
