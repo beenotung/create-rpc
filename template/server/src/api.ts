@@ -40,7 +40,7 @@ function post(url: string, body: object, token_?: string) {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer ' + token_
+      'Authorization': 'Bearer ' + token_,
     },
     body: JSON.stringify(body)
   })

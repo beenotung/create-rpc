@@ -9,6 +9,7 @@
     "db:update": "knex migrate:latest && erd-to-proxy < erd.txt > src/proxy.ts",
     "db:seed": "ts-node seed.ts",
     "start": "ts-node-dev src/main.ts",
+    "format": "prettier --write . && format-json-cli",
     "test": "tsc --noEmit",
     "build": "tsc -p ."
   },
@@ -24,7 +25,9 @@
     "@types/integer": "^4.0.1",
     "@types/node": "^18.16.3",
     "@types/permit": "^0.2.2",
+    "format-json-cli": "^1.0.2",
     "gen-env": "^1.0.1",
+    "prettier": "^2.8.7",
     "quick-erd": "^4.6.0",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",

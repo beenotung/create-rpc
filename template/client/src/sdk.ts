@@ -21,7 +21,7 @@ function post(url: string, body: object, token_?: string) {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer ' + token_
+      'Authorization': 'Bearer ' + token_,
     },
     body: JSON.stringify(body)
   })
@@ -50,8 +50,8 @@ export function greet(input: GreetInput): Promise<GreetOutput & { error?: string
 }
 
 export type RegisterInput = {
-  username: string;
-  password: string;
+  username: string
+  password: string
 }
 export type RegisterOutput = {
   token: string;
@@ -61,8 +61,8 @@ export function register(input: RegisterInput): Promise<RegisterOutput & { error
 }
 
 export type LoginInput = {
-  username: string;
-  password: string;
+  username: string
+  password: string
 }
 export type LoginOutput = {
   token: string;
