@@ -16,6 +16,7 @@ export type Log = {
   input: string // json
   output: string // json
   time_used: number
+  user_agent: null | string
 }
 
 export type DBProxy = {

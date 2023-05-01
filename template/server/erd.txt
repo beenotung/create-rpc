@@ -31,6 +31,7 @@ rpc text
 input json
 output json
 time_used integer
+user_agent text null
 
 
 # zoom: 1.000

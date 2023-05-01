@@ -127,6 +127,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
         output: JSON.stringify(json),
         time_used: endTime - startTime,
         user_id,
+        user_agent: req.headers['user-agent'] || null,
       })
     })
   }
