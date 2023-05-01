@@ -40,10 +40,10 @@ function post(url: string, body: object, token_?: string) {
 }
 
 export type GreetInput = {
-  name: string;
+  name: string
 }
 export type GreetOutput = {
-  message: string;
+  message: string
 }
 export function greet(input: GreetInput): Promise<GreetOutput & { error?: string }> {
 	return post('/greet', input)
@@ -54,7 +54,7 @@ export type RegisterInput = {
   password: string
 }
 export type RegisterOutput = {
-  token: string;
+  token: string
 }
 export function register(input: RegisterInput): Promise<RegisterOutput & { error?: string }> {
 	return post('/register', input)
@@ -65,7 +65,7 @@ export type LoginInput = {
   password: string
 }
 export type LoginOutput = {
-  token: string;
+  token: string
 }
 export function login(input: LoginInput): Promise<LoginOutput & { error?: string }> {
 	return post('/login', input)
@@ -85,20 +85,20 @@ export function getUserList(input: GetUserListInput): Promise<GetUserListOutput 
 }
 
 export type GetRecentLogsInput = {
-  limit: number;
-  last_log_id: number;
-  username: string;
+  limit: number
+  last_log_id: number
+  username: string
 }
 export type GetRecentLogsOutput = {
   users: Array<{
-    id: number;
-    user_id: number;
-    username: string;
-    timestamp: string;
-    rpc: string;
-    input: string;
-  }>;
-  remains: number;
+    id: number
+    user_id: number
+    username: string
+    timestamp: string
+    rpc: string
+    input: string
+  }>
+  remains: number
 }
 export function getRecentLogs(input: GetRecentLogsInput & { token: string }): Promise<GetRecentLogsOutput & { error?: string }> {
   let { token, ...body } = input

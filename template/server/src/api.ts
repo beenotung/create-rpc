@@ -81,10 +81,10 @@ function post(url: string, body: object, token_?: string) {
     let Name = name[0].toUpperCase() + name.slice(1)
     let InputType =
       input.inputParser?.type ??
-      genTsType(input.sampleInput ?? {}, { format: true })
+      genTsType(input.sampleInput ?? {}, { format: true, semi: false })
     let OutputType =
       input.outputParser?.type ??
-      genTsType(input.sampleOutput ?? {}, { format: true })
+      genTsType(input.sampleOutput ?? {}, { format: true, semi: false })
     code += `
 export type ${Name}Input = ${InputType}
 export type ${Name}Output = ${OutputType}`
