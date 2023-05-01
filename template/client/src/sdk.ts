@@ -71,23 +71,38 @@ export function login(input: LoginInput): Promise<LoginOutput & { error?: string
 	return post('/login', input)
 }
 
-export type GetRecentUserListInput = {
+export type GetUserListInput = {
+}
+export type GetUserListOutput = {
+  users: Array<{
+    id: number
+    username: string
+    is_admin: boolean
+  }>
+}
+export function getUserList(input: GetUserListInput): Promise<GetUserListOutput & { error?: string }> {
+	return post('/getUserList', input)
+}
+
+export type GetRecentLogsInput = {
   limit: number;
   last_log_id: number;
-  keyword: string;
+  username: string;
 }
-export type GetRecentUserListOutput = {
+export type GetRecentLogsOutput = {
   users: Array<{
     id: number;
     user_id: number;
     username: string;
-    created_at: string;
+    timestamp: string;
+    rpc: string;
+    input: string;
   }>;
   remains: number;
 }
-export function getRecentUserList(input: GetRecentUserListInput & { token: string }): Promise<GetRecentUserListOutput & { error?: string }> {
+export function getRecentLogs(input: GetRecentLogsInput & { token: string }): Promise<GetRecentLogsOutput & { error?: string }> {
   let { token, ...body } = input
-	return post('/getRecentUserList', body, token)
+	return post('/getRecentLogs', body, token)
 }
 
 export type DemoInput = {

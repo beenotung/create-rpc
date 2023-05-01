@@ -14,14 +14,17 @@ npx create-rpc [project-name]
 
 ## Template Features
 
-- Auto-generate client SDK in Typescript
-- Auto apply runtime type checking on input data
+- Auto-generate standalone[1] client SDK in Typescript
+- Infer input/output type from sample data or [cast.ts](https://github.com/beenotung/cast.ts) parser
+- Auto apply runtime type checking on input/output data
 - Auto-generate (knex) database migration with quick-erd
 - Typed array-like ORM with better-sqlite3-proxy
 - Hashing password with bcrypt
 - JWT generation
 - Auto-storing JWT token
 - Dotenv setup
+
+[1]: The generated client sdk is self-contained. You don't need to import the server from the client project.
 
 ## Available Commands
 

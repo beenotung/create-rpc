@@ -7,6 +7,7 @@ import debug from 'debug'
 import { JWTPayload, getJWT } from './jwt'
 import { join } from 'path'
 import { proxy } from './proxy'
+import { Parser } from 'cast.ts'
 
 export function defModule(options?: { apiPrefix?: string }) {
   let log = debug('api')
@@ -61,8 +62,10 @@ function post(url: string, body: object, token_?: string) {
   function defAPI<Input, Output>(
     input: {
       name: string
-      sampleInput: Input
-      sampleOutput: Output
+      sampleInput?: Input
+      sampleOutput?: Output
+      inputParser?: Parser<Input>
+      outputParser?: Parser<Output>
     } & (
       | {
           jwt: true
@@ -76,11 +79,15 @@ function post(url: string, body: object, token_?: string) {
   ) {
     let name = input.name
     let Name = name[0].toUpperCase() + name.slice(1)
-    let Input = genTsType(input.sampleInput, { format: true })
-    let Output = genTsType(input.sampleOutput, { format: true })
+    let InputType =
+      input.inputParser?.type ??
+      genTsType(input.sampleInput ?? {}, { format: true })
+    let OutputType =
+      input.outputParser?.type ??
+      genTsType(input.sampleOutput ?? {}, { format: true })
     code += `
-export type ${Name}Input = ${Input}
-export type ${Name}Output = ${Output}`
+export type ${Name}Input = ${InputType}
+export type ${Name}Output = ${OutputType}`
     if (input.jwt) {
       code += `
 export function ${name}(input: ${Name}Input & { token: string }): Promise<${Name}Output & { error?: string }> {
@@ -106,13 +113,22 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       let json: Output | { error: string }
       let user_id: number | null = null
       try {
-        checkTsType(Input, req.body)
+        if (input.inputParser) {
+          req.body = input.inputParser.parse(req.body, { name: 'req.body' })
+        } else {
+          checkTsType(InputType, req.body)
+        }
         if (input.jwt) {
           let jwt = getJWT(req)
           user_id = jwt.id
           json = await input.fn(req.body, jwt)
         } else {
           json = await input.fn(req.body)
+        }
+        if (input.outputParser) {
+          json = input.outputParser.parse(json, { name: 'res.body' })
+        } else {
+          checkTsType(OutputType, json)
         }
       } catch (error: any) {
         let statusCode = error.statusCode || 500

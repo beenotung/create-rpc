@@ -1,10 +1,11 @@
-import { find } from 'better-sqlite3-proxy'
+import { find, Table } from 'better-sqlite3-proxy'
+import { array, boolean, id, nullable, object, optional, string } from 'cast.ts'
 import { defModule } from './api'
 import { db } from './db'
 import { HttpError } from './error'
 import { hashPassword, comparePassword } from './hash'
 import { encodeJWT, JWTPayload } from './jwt'
-import { proxy } from './proxy'
+import { proxy, User } from './proxy'
 
 let core = defModule()
 let { defAPI } = core
@@ -18,31 +19,21 @@ defAPI({
   },
 })
 
-function checkUserId(input: { username: string; password: string }) {
-  if (input.username.length < 1)
-    throw new HttpError(400, 'username must be at least one character')
-  if (input.username.length > 32)
-    throw new HttpError(400, 'username must not exceed 32 characters')
-  if (input.password.length < 6)
-    throw new HttpError(400, 'password must be at least 6 characters')
-  if (input.password.length > 256)
-    throw new HttpError(400, 'password must not exceed 256 characters')
-}
-
 function checkAdmin(jwt: JWTPayload) {
   if (!jwt.is_admin)
     throw new HttpError(403, 'This API is only accessible by admin')
 }
 
+let authParser = object({
+  username: string({ minLength: 1, maxLength: 32, sampleValue: 'alice' }),
+  password: string({ minLength: 6, maxLength: 256, sampleValue: 'secret' }),
+})
+
 defAPI({
   name: 'register',
-  sampleInput: {
-    username: 'alice',
-    password: 'secret',
-  },
+  inputParser: authParser,
   sampleOutput: { token: 'a-jwt-string' },
   fn: async input => {
-    checkUserId(input)
     let user = find(proxy.user, { username: input.username })
     if (user) throw new HttpError(409, 'this username is already in use')
     let id = proxy.user.push({
@@ -57,13 +48,9 @@ defAPI({
 
 defAPI({
   name: 'login',
-  sampleInput: {
-    username: 'alice',
-    password: 'secret',
-  },
+  inputParser: authParser,
   sampleOutput: { token: 'a-jwt-string' },
   async fn(input) {
-    checkUserId(input)
     let user = find(proxy.user, { username: input.username })
     if (!user) throw new HttpError(404, 'this username is not used')
     let matched = await comparePassword({
@@ -73,6 +60,22 @@ defAPI({
     if (!matched) throw new HttpError(401, 'wrong username or password')
     let token = encodeJWT({ id: user.id!, is_admin: user.is_admin })
     return { token }
+  },
+})
+
+defAPI({
+  name: 'getUserList',
+  outputParser: object({
+    users: array(
+      object({
+        id: id(),
+        username: string(),
+        is_admin: boolean(),
+      }),
+    ),
+  }),
+  fn() {
+    return { users: proxy.user as Table<User> }
   },
 })
 
@@ -86,7 +89,7 @@ select
 , log.input
 from user
 inner join log on log.user_id = user.id
-where user.username like :keyword
+where user.username like :username
   and log.id < :last_log_id
 order by log.id desc
 limit :limit
@@ -98,22 +101,24 @@ select
   count(*) as count
 from user
 inner join log on log.user_id = user.id
-where user.username like :keyword
+where user.username like :username
   and log.id < :last_log_id
 `,
   )
   .pluck()
 defAPI({
-  name: 'getRecentUserList',
+  name: 'getRecentLogs',
   jwt: true,
-  sampleInput: { limit: 5, last_log_id: 0, keyword: 'alice' },
+  sampleInput: { limit: 5, last_log_id: 0, username: 'alice' },
   sampleOutput: {
     users: [
       {
         id: 1,
         user_id: 1,
         username: 'alice',
-        created_at: '2023-03-29 08:00:00',
+        timestamp: '2023-03-29 08:00:00',
+        rpc: 'getRecentUserList',
+        input: '{"keyword":"alice"}',
       },
     ],
     remains: 3,
@@ -121,12 +126,12 @@ defAPI({
   fn(input, jwt) {
     checkAdmin(jwt)
     let users = select_recent_log.all({
-      keyword: '%' + input.keyword + '%',
+      username: '%' + input.username + '%',
       last_log_id: input.last_log_id,
       limit: Math.min(25, input.limit),
     })
     let remains = count_recent_log.get({
-      keyword: '%' + input.keyword + '%',
+      username: '%' + input.username + '%',
       last_log_id: input.last_log_id,
     }) as number
     remains -= users.length
@@ -137,8 +142,10 @@ defAPI({
 // a shorter api for easy copy-paste into new APIs
 defAPI({
   name: 'demo',
-  sampleInput: {},
-  sampleOutput: {},
+  // sampleInput: {},
+  // sampleOutput: {},
+  // inputParser: object({}),
+  // outputParser: object({}),
   // fn(input) {
   //   return {  }
   // },
