@@ -4,7 +4,7 @@ import { Router } from 'express'
 import { writeFileSync } from 'fs'
 import { genTsType } from 'gen-ts-type'
 import { join } from 'path'
-import { checkTsType } from 'ts-type-check'
+import { parseTsType } from 'ts-type-check'
 import { env } from './env'
 import { getJWT, JWTPayload } from './jwt'
 import { proxy } from './proxy'
@@ -102,17 +102,38 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
 }
 `
     }
+
+    const inputParser = input.inputParser
+    let parseInput: (body: unknown) => Input
+    if (inputParser) {
+      parseInput = body => inputParser.parse(body, { name: 'req.body' })
+    } else {
+      const typeChecker = parseTsType(InputType)
+      parseInput = body => {
+        typeChecker.check(body)
+        return body as Input
+      }
+    }
+
+    const outputParser = input.outputParser
+    let parseOutput: (json: Output) => Output
+    if (outputParser) {
+      parseOutput = json => outputParser.parse(json, { name: 'res.body' })
+    } else {
+      const typeChecker = parseTsType(OutputType)
+      parseOutput = json => {
+        typeChecker.check(json)
+        return json
+      }
+    }
+
     router.post('/' + name, async (req, res) => {
       log(name, req.body)
       let startTime = Date.now()
       let json: Output | { error: string }
       let user_id: number | null = null
       try {
-        if (input.inputParser) {
-          req.body = input.inputParser.parse(req.body, { name: 'req.body' })
-        } else {
-          checkTsType(InputType, req.body)
-        }
+        let body = parseInput(req.body)
         if (!input.fn) {
           res.status(501)
           res.json(
@@ -125,15 +146,11 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
         if (input.jwt) {
           let jwt = getJWT(req)
           user_id = jwt.id
-          json = await input.fn(req.body, jwt)
+          json = await input.fn(body, jwt)
         } else {
-          json = await input.fn(req.body)
+          json = await input.fn(body)
         }
-        if (input.outputParser) {
-          json = input.outputParser.parse(json, { name: 'res.body' })
-        } else {
-          checkTsType(OutputType, json)
-        }
+        json = parseOutput(json)
       } catch (error: any) {
         let statusCode = error.statusCode || 500
         res.status(statusCode)
