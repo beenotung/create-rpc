@@ -104,11 +104,6 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
     }
     router.post('/' + name, async (req, res) => {
       log(name, req.body)
-      if (!input.fn) {
-        res.status(501)
-        res.json(input.sampleOutput)
-        return
-      }
       let startTime = Date.now()
       let json: Output | { error: string }
       let user_id: number | null = null
@@ -117,6 +112,15 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
           req.body = input.inputParser.parse(req.body, { name: 'req.body' })
         } else {
           checkTsType(InputType, req.body)
+        }
+        if (!input.fn) {
+          res.status(501)
+          res.json(
+            input.sampleOutput ??
+              input.outputParser?.sampleValue ??
+              input.outputParser?.randomSample(),
+          )
+          return
         }
         if (input.jwt) {
           let jwt = getJWT(req)
