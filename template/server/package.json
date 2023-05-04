@@ -49,6 +49,6 @@
     "listening-on": "^2.0.9",
     "permit": "^0.2.4",
     "populate-env": "^2.0.0",
-    "ts-type-check": "^2.0.2"
+    "ts-type-check": "^2.1.0"
   }
 }
