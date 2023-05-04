@@ -3,7 +3,7 @@ import { array, boolean, id, nullable, object, optional, string } from 'cast.ts'
 import { defModule } from './api'
 import { db } from './db'
 import { HttpError } from './error'
-import { hashPassword, comparePassword } from './hash'
+import { comparePassword, hashPassword } from './hash'
 import { encodeJWT, JWTPayload } from './jwt'
 import { proxy, User } from './proxy'
 

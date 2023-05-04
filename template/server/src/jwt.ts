@@ -1,8 +1,8 @@
-import { HttpError } from './error'
+import { Request } from 'express'
 import jwt from 'jwt-simple'
 import { Bearer } from 'permit'
 import { env } from './env'
-import { Request } from 'express'
+import { HttpError } from './error'
 
 export type JWTPayload = {
   id: number

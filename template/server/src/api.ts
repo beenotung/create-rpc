@@ -1,13 +1,13 @@
+import { Parser } from 'cast.ts'
+import debug from 'debug'
 import { Router } from 'express'
 import { writeFileSync } from 'fs'
 import { genTsType } from 'gen-ts-type'
+import { join } from 'path'
 import { checkTsType } from 'ts-type-check'
 import { env } from './env'
-import debug from 'debug'
-import { JWTPayload, getJWT } from './jwt'
-import { join } from 'path'
+import { getJWT, JWTPayload } from './jwt'
 import { proxy } from './proxy'
-import { Parser } from 'cast.ts'
 
 export function defModule(options?: { apiPrefix?: string }) {
   let log = debug('api')
