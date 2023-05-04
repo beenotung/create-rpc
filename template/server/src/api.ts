@@ -60,7 +60,7 @@ function post(url: string, body: object, token_?: string) {
 `
 
   function defAPI<Input, Output>(
-    input: {
+    api: {
       name: string
       sampleInput?: Input
       sampleOutput?: Output
@@ -77,18 +77,18 @@ function post(url: string, body: object, token_?: string) {
         }
     ),
   ) {
-    let name = input.name
+    let name = api.name
     let Name = name[0].toUpperCase() + name.slice(1)
     let InputType =
-      input.inputParser?.type ??
-      genTsType(input.sampleInput ?? {}, { format: true, semi: false })
+      api.inputParser?.type ??
+      genTsType(api.sampleInput ?? {}, { format: true, semi: false })
     let OutputType =
-      input.outputParser?.type ??
-      genTsType(input.sampleOutput ?? {}, { format: true, semi: false })
+      api.outputParser?.type ??
+      genTsType(api.sampleOutput ?? {}, { format: true, semi: false })
     code += `
 export type ${Name}Input = ${InputType}
 export type ${Name}Output = ${OutputType}`
-    if (input.jwt) {
+    if (api.jwt) {
       code += `
 export function ${name}(input: ${Name}Input & { token: string }): Promise<${Name}Output & { error?: string }> {
   let { token, ...body } = input
@@ -103,7 +103,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
 `
     }
 
-    const inputParser = input.inputParser
+    const inputParser = api.inputParser
     let parseInput: (body: unknown) => Input
     if (inputParser) {
       parseInput = body => inputParser.parse(body, { name: 'req.body' })
@@ -115,7 +115,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       }
     }
 
-    const outputParser = input.outputParser
+    const outputParser = api.outputParser
     let parseOutput: (json: Output) => Output
     if (outputParser) {
       parseOutput = json => outputParser.parse(json, { name: 'res.body' })
@@ -134,21 +134,21 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       let user_id: number | null = null
       try {
         let body = parseInput(req.body)
-        if (!input.fn) {
+        if (!api.fn) {
           res.status(501)
           res.json(
-            input.sampleOutput ??
-              input.outputParser?.sampleValue ??
-              input.outputParser?.randomSample(),
+            api.sampleOutput ??
+              api.outputParser?.sampleValue ??
+              api.outputParser?.randomSample(),
           )
           return
         }
-        if (input.jwt) {
+        if (api.jwt) {
           let jwt = getJWT(req)
           user_id = jwt.id
-          json = await input.fn(body, jwt)
+          json = await api.fn(body, jwt)
         } else {
-          json = await input.fn(body)
+          json = await api.fn(body)
         }
         json = parseOutput(json)
       } catch (error: any) {
