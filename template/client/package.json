@@ -15,5 +15,8 @@
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "client": "link:"
   }
 }
