@@ -26,4 +26,10 @@ export async function uploadFiles(
     }
   }
 }
+
+export function toImageUrl(filename: string): string {
+  if (filename.startsWith('http://') || filename.startsWith('https://')) {
+    return filename
+  }
+  return server_origin + '/uploads/' + filename
 }
