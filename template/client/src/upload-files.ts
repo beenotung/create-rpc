@@ -8,14 +8,22 @@ export type UploadFilesOutput = {
 export async function uploadFiles(
   files: FileList | File[],
 ): Promise<UploadFilesOutput> {
-  let formData = new FormData()
-  for (let file of files) {
-    formData.append('file', file)
+  try {
+    let formData = new FormData()
+    for (let file of files) {
+      formData.append('file', file)
+    }
+    let res = await fetch(server_origin + '/uploads', {
+      method: 'POST',
+      body: formData,
+    })
+    let json = await res.json()
+    return json
+  } catch (error) {
+    return {
+      error: String(error),
+      filenames: [],
+    }
   }
-  let res = await fetch(server_origin + '/uploads', {
-    method: 'POST',
-    body: formData,
-  })
-  let json = await res.json()
-  return json
+}
 }
