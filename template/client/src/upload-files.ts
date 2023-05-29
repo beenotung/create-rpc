@@ -10,8 +10,8 @@ export async function uploadFiles(
 ): Promise<UploadFilesOutput> {
   try {
     let formData = new FormData()
-    for (let file of files) {
-      formData.append('file', file)
+    for (let i = 0; i < files.length; i++) {
+      formData.append('file', files[i])
     }
     let res = await fetch(server_origin + '/uploads', {
       method: 'POST',
