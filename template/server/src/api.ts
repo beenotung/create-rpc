@@ -127,6 +127,22 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       }
     }
 
+    function getSampleInput() {
+      return (
+        api.sampleInput ??
+        api.inputParser?.sampleValue ??
+        api.inputParser?.randomSample()
+      )
+    }
+
+    function getSampleOutput() {
+      return (
+        api.sampleOutput ??
+        api.outputParser?.sampleValue ??
+        api.outputParser?.randomSample()
+      )
+    }
+
     let requestHandler = async (req: Request, res: Response) => {
       log(name, req.body)
       let startTime = Date.now()
@@ -136,11 +152,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
         let body = parseInput(req.body)
         if (!api.fn) {
           res.status(501)
-          res.json(
-            api.sampleOutput ??
-              api.outputParser?.sampleValue ??
-              api.outputParser?.randomSample(),
-          )
+          res.json(getSampleOutput())
           return
         }
         if (api.jwt) {
@@ -169,7 +181,16 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
     }
     router.post('/' + name, requestHandler)
 
-    return { ...api, parseInput, parseOutput, requestHandler }
+    return {
+      ...api,
+      parseInput,
+      parseOutput,
+      requestHandler,
+      inputType: InputType,
+      outputType: OutputType,
+      getSampleInput,
+      getSampleOutput,
+    }
   }
 
   function saveSDK() {
