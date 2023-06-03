@@ -1,6 +1,6 @@
 import { Parser } from 'cast.ts'
 import debug from 'debug'
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import { writeFileSync } from 'fs'
 import { genTsType } from 'gen-ts-type'
 import { join } from 'path'
@@ -127,7 +127,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       }
     }
 
-    router.post('/' + name, async (req, res) => {
+    let requestHandler = async (req: Request, res: Response) => {
       log(name, req.body)
       let startTime = Date.now()
       let json: Output | { error: string }
@@ -166,7 +166,10 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
         user_id,
         user_agent: req.headers['user-agent'] || null,
       })
-    })
+    }
+    router.post('/' + name, requestHandler)
+
+    return { ...api, parseInput, parseOutput, requestHandler }
   }
 
   function saveSDK() {
