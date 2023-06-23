@@ -27,7 +27,7 @@ export async function uploadFiles(
   }
 }
 
-export function toImageUrl(filename: string): string {
+export function toUploadedFileUrl(filename: string): string {
   if (filename.startsWith('http://') || filename.startsWith('https://')) {
     return filename
   }
