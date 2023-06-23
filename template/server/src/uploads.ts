@@ -16,7 +16,7 @@ router.post('/', (req, res) => {
     filter: part => part.name === 'file',
     multiples: true,
     filename: (name, ext, part, form) => {
-      let extname = part.mimetype?.split('/').pop()
+      let extname = part.mimetype?.split('/').pop()?.split(';')[0]
       let filename = crypto.randomUUID()
       return `${filename}.${extname}`
     },
