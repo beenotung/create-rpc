@@ -31,7 +31,15 @@ rpc text
 input json
 output json
 time_used integer
-user_agent text null
+user_agent text NULL
+
+
+file
+----
+id integer PK
+filename text
+size integer
+mimetype text
 
 
 # zoom: 1.000
@@ -44,3 +52,4 @@ user_agent text null
 # table-text: #000000
 # user (193, 300)
 # log (538, 473)
+# file (172, 646)

@@ -19,9 +19,17 @@ export type Log = {
   user_agent: null | string
 }
 
+export type File = {
+  id?: null | number
+  filename: string
+  size: number
+  mimetype: string
+}
+
 export type DBProxy = {
   user: User[]
   log: Log[]
+  file: File[]
 }
 
 export let proxy = proxySchema<DBProxy>({
@@ -32,5 +40,6 @@ export let proxy = proxySchema<DBProxy>({
       /* foreign references */
       ['user', { field: 'user_id', table: 'user' }],
     ],
+    file: [],
   },
 })

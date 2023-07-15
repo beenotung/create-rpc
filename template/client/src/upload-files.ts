@@ -1,30 +1,32 @@
 import { server_origin } from './sdk'
 
+export type UploadFile = {
+  id: number
+  filename: string
+  size: number
+  mimetype: string
+}
+
 export type UploadFilesOutput = {
-  error?: string
-  filenames: string[]
+  files: UploadFile[]
 }
 
 export async function uploadFiles(
   files: FileList | File[],
 ): Promise<UploadFilesOutput> {
-  try {
-    let formData = new FormData()
-    for (let i = 0; i < files.length; i++) {
-      formData.append('file', files[i])
-    }
-    let res = await fetch(server_origin + '/uploads', {
-      method: 'POST',
-      body: formData,
-    })
-    let json = await res.json()
-    return json
-  } catch (error) {
-    return {
-      error: String(error),
-      filenames: [],
-    }
+  let formData = new FormData()
+  for (let i = 0; i < files.length; i++) {
+    formData.append('file', files[i])
   }
+  let res = await fetch(server_origin + '/uploads', {
+    method: 'POST',
+    body: formData,
+  })
+  let json = await res.json()
+  if (json.error) {
+    throw json.error
+  }
+  return json
 }
 
 export function toUploadedFileUrl(filename: string): string {

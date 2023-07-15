@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import express from 'express'
 import formidable from 'formidable'
 import { mkdirSync } from 'fs'
+import { proxy } from './proxy'
 
 let router = express.Router()
 
@@ -27,10 +28,24 @@ router.post('/', (req, res) => {
       res.json({ error: String(err) })
       return
     }
-    let file = files.file
-    let fileList = Array.isArray(file) ? file : file ? [file] : []
-    let filenames = fileList.map(file => file.newFilename)
-    res.json({ filenames })
+    try {
+      let file = files.file
+      let fileList = Array.isArray(file) ? file : file ? [file] : []
+      res.json({
+        files: fileList.map(file => {
+          let row = {
+            filename: file.newFilename,
+            size: file.size,
+            mimetype: file.mimetype || 'application/octet-stream',
+          }
+          let id = proxy.file.push(row)
+          return { id, ...row }
+        }),
+      })
+    } catch (error) {
+      res.status(500)
+      res.json({ error: String(error) })
+    }
   })
 })
 
