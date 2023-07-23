@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
-cd template/client
-cp .gitignore gitignore.txt
-cd ../server
-cp .gitignore gitignore.txt
+
+function cp_gitignore {
+  cd $1
+  cp .gitignore gitignore.txt
+  cd ../../../
+}
+
+cp_gitignore templates/multi-module/client
+cp_gitignore templates/multi-module/server
+
+cp_gitignore templates/single-module/client
+cp_gitignore templates/single-module/server
