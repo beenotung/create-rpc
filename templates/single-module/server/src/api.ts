@@ -17,6 +17,9 @@ export function defModule(options?: { apiPrefix?: string }) {
   let apiPrefix = options?.apiPrefix || '/api'
 
   let code = `
+// This file is generated automatically
+// Don't edit this file directly
+
 export let server_origin = '${env.ORIGIN}'
 
 let api_origin = '${env.ORIGIN}${apiPrefix}'
