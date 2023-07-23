@@ -28,7 +28,7 @@
     "create-rpc": "cli.js"
   },
   "files": [
-    "template",
+    "templates",
     "cli.d.ts",
     "cli.js"
   ],
