@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "incremental": true
   },
-  "exclude": ["template"]
+  "exclude": ["templates"]
 }
