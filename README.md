@@ -6,10 +6,20 @@ Starter template of Typescript web server with auto-generated client SDK using R
 
 ## Usage
 
+Interactive mode:
+
 ```bash
 npm init rpc [project-name]
 # or
 npx create-rpc [project-name]
+```
+
+Non-interactive mode:
+
+```bash
+npx -y create-rpc --single [project-name]
+# or
+npx -y create-rpc --multi [project-name]
 ```
 
 ## Template Features
@@ -23,6 +33,7 @@ npx create-rpc [project-name]
 - JWT generation
 - Auto-storing JWT token
 - Dotenv setup
+- Single/multi module template
 
 [1]: The generated client sdk is self-contained. You don't need to import the server from the client project.
 
@@ -34,6 +45,8 @@ Inside the server directory, you can run several commands:
 npm start
   Starts the auto-refresh development server.
   It auto generates the client/src/sdk.ts based on the APIs defined in server/src/core.ts.
+  or
+  It auto generates the client/src/api/[name].ts based on the APIs defined in server/src/modules/[name].ts.
 
 npm run db:setup
   Migrate the database schema to latest version.
