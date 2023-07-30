@@ -8,6 +8,5 @@
   "prettier.singleQuote": true,
   "prettier.tabWidth": 2,
   "prettier.trailingComma": "all",
-  "prettier.useTabs": false,
-  "recommendations": ["esbenp.prettier-vscode"]
+  "prettier.useTabs": false
 }

@@ -35,11 +35,30 @@ async function askTemplate() {
   }
 }
 
-function saveSettings(settings: Buffer, projectDir: string) {
-  let vscodeDir = join(projectDir, '.vscode')
-  mkdirSync(vscodeDir, { recursive: true })
-  let file = join(vscodeDir, 'settings.json')
-  writeFileSync(file, settings)
+function loadConfigFile(filename: string) {
+  let file = join(__dirname, 'templates', '.vscode', filename)
+  let content = readFileSync(file)
+
+  function save(vscodeDir: string) {
+    let file = join(vscodeDir, filename)
+    writeFileSync(file, content)
+  }
+
+  return { save }
+}
+
+function loadConfig() {
+  let extensions = loadConfigFile('extensions.json')
+  let settings = loadConfigFile('settings.json')
+
+  function save(projectDir: string) {
+    let vscodeDir = join(projectDir, '.vscode')
+    mkdirSync(vscodeDir, { recursive: true })
+    extensions.save(vscodeDir)
+    settings.save(vscodeDir)
+  }
+
+  return { save }
 }
 
 async function main() {
@@ -49,11 +68,11 @@ async function main() {
   console.log(`Copying ${template} rpc template to:`, dest, '...')
   await copyTemplate({ srcDir, dest, updatePackageJson: false })
 
-  let templatesDir = join(__dirname, 'templates')
-  let settings = readFileSync(join(templatesDir, '.vscode', 'settings.json'))
-  saveSettings(settings, dest)
-  saveSettings(settings, join(dest, 'client'))
-  saveSettings(settings, join(dest, 'server'))
+  let config = loadConfig()
+
+  config.save(dest)
+  config.save(join(dest, 'client'))
+  config.save(join(dest, 'server'))
 
   let readme = readFileSync(join(__dirname, 'README.md'))
     .toString()
