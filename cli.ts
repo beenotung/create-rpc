@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, renameSync, writeFileSync } from 'fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  writeFileSync,
+} from 'fs'
 import { copyTemplate, getDest, ask } from 'npm-init-helper'
 import { join } from 'path'
 
@@ -29,12 +35,25 @@ async function askTemplate() {
   }
 }
 
+function saveSettings(settings: Buffer, projectDir: string) {
+  let vscodeDir = join(projectDir, '.vscode')
+  mkdirSync(vscodeDir, { recursive: true })
+  let file = join(vscodeDir, 'settings.json')
+  writeFileSync(file, settings)
+}
+
 async function main() {
   let template = await askTemplate()
   let dest = await getDest()
   let srcDir = join(__dirname, 'templates', template)
-  console.log('Copying rpc template to:', dest, '...')
+  console.log(`Copying ${template} rpc template to:`, dest, '...')
   await copyTemplate({ srcDir, dest, updatePackageJson: false })
+
+  let templatesDir = join(__dirname, 'templates')
+  let settings = readFileSync(join(templatesDir, '.vscode', 'settings.json'))
+  saveSettings(settings, dest)
+  saveSettings(settings, join(dest, 'client'))
+  saveSettings(settings, join(dest, 'server'))
 
   let readme = readFileSync(join(__dirname, 'README.md'))
     .toString()
