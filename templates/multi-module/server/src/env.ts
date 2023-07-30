@@ -9,7 +9,7 @@ export let env = {
   NODE_ENV: 'development',
   ORIGIN: 'http://localhost:3000',
   PORT: 3000,
-  JWT_SECRET: '',
+  JWT_SECRET: process.env.JWT_SECRET || '',
 }
 
 if (!env.JWT_SECRET) {
