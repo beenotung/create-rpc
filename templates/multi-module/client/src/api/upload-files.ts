@@ -1,4 +1,5 @@
 import { server_origin } from './config'
+import { getToken } from './utils'
 
 export type UploadFile = {
   id: number
@@ -20,6 +21,10 @@ export async function uploadFiles(
   }
   let res = await fetch(server_origin + '/uploads', {
     method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + getToken(),
+    },
     body: formData,
   })
   let json = await res.json()

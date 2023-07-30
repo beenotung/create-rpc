@@ -1,3 +1,4 @@
+import { login } from '../src/api/user'
 import { uploadFiles } from '../src/api/upload-files'
 
 let input = document.createElement('input')
@@ -5,10 +6,15 @@ input.type = 'file'
 input.multiple = true
 input.onchange = async () => {
   if (!input.files) return
-  let json = await uploadFiles(input.files)
-  console.log(json)
-  code.textContent = JSON.stringify(json, null, 2)
-  console.log(json.files[0].filename)
+  try {
+    await login({ username: 'alice', password: 'secret' })
+    let json = await uploadFiles(input.files)
+    console.log(json)
+    code.textContent = JSON.stringify(json, null, 2)
+  } catch (error) {
+    console.log(error)
+    code.textContent = String(error)
+  }
 }
 document.body.appendChild(input)
 
