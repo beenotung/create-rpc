@@ -9,6 +9,7 @@ import {
   optional,
   string,
 } from 'cast.ts'
+import httpStatus from 'http-status'
 import { defModule } from '../api'
 import { db } from '../db'
 import { HttpError } from '../error'

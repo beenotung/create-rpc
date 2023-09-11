@@ -1,5 +1,6 @@
 import { find, Table } from 'better-sqlite3-proxy'
 import { array, boolean, id, object, string } from 'cast.ts'
+import httpStatus from 'http-status'
 import { defModule } from '../api'
 import { db } from '../db'
 import { HttpError } from '../error'
@@ -22,7 +23,11 @@ defAPI({
   sampleOutput: { token: 'a-jwt-string' },
   fn: async input => {
     let user = find(proxy.user, { username: input.username })
-    if (user) throw new HttpError(409, 'this username is already in use')
+    if (user)
+      throw new HttpError(
+        httpStatus.CONFLICT,
+        'this username is already in use',
+      )
     let id = proxy.user.push({
       username: input.username,
       password_hash: await hashPassword(input.password),
@@ -44,7 +49,8 @@ defAPI({
       password: input.password,
       password_hash: user.password_hash,
     })
-    if (!matched) throw new HttpError(401, 'wrong username or password')
+    if (!matched)
+      throw new HttpError(httpStatus.UNAUTHORIZED, 'wrong username or password')
     let token = encodeJWT({ id: user.id!, is_admin: user.is_admin })
     return { token }
   },

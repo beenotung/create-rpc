@@ -1,4 +1,5 @@
 import { array, id, object, optional, string } from 'cast.ts'
+import httpStatus from 'http-status'
 import { defModule } from './api'
 
 export let core = defModule({ name: 'core' })
