@@ -6,7 +6,8 @@ import { genTsType } from 'gen-ts-type'
 import { dirname, join } from 'path'
 import { parseTsType } from 'ts-type-check'
 import { env } from './env'
-import { getJWT, JWTPayload } from './jwt'
+import { HttpError } from './error'
+import { checkAdmin, getJWT, JWTPayload } from './jwt'
 import { proxy } from './proxy'
 
 function saveConfig(options: { file: string }) {
@@ -45,6 +46,7 @@ let api_origin = '${apiPrefix}'
     } & (
       | {
           jwt: true
+          role?: 'admin'
           fn?: (input: Input, jwt: JWTPayload) => Output | Promise<Output>
         }
       | {
@@ -133,6 +135,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
         }
         if (api.jwt) {
           let jwt = getJWT(req)
+          if (api.role == 'admin') checkAdmin(jwt)
           user_id = jwt.id
           json = await api.fn(body, jwt)
         } else {

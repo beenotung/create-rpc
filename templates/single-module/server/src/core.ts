@@ -20,14 +20,6 @@ defAPI({
   },
 })
 
-function checkAdmin(jwt: JWTPayload) {
-  if (!jwt.is_admin)
-    throw new HttpError(
-      httpStatus.FORBIDDEN,
-      'This API is only accessible by admin',
-    )
-}
-
 let authParser = object({
   username: string({ minLength: 1, maxLength: 32, sampleValue: 'alice' }),
   password: string({ minLength: 6, maxLength: 256, sampleValue: 'secret' }),
@@ -118,6 +110,7 @@ where user.username like :username
 defAPI({
   name: 'getRecentLogs',
   jwt: true,
+  role: 'admin',
   sampleInput: { limit: 5, last_log_id: 0, username: 'alice' },
   sampleOutput: {
     users: [
@@ -133,7 +126,6 @@ defAPI({
     remains: 3,
   },
   fn(input, jwt) {
-    checkAdmin(jwt)
     let users = select_recent_log.all({
       username: '%' + input.username + '%',
       last_log_id: input.last_log_id,
