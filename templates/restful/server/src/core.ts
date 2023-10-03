@@ -1,4 +1,4 @@
-import { array, id, object, optional, string } from 'cast.ts'
+import { array, id, int, object, optional, string, values } from 'cast.ts'
 import httpStatus from 'http-status'
 import { defModule } from './api'
 
@@ -7,11 +7,11 @@ let { defAPI } = core
 
 defAPI('POST', '/users/login', {
   name: 'login',
-  input: object({
+  inputParser: object({
     username: string({ trim: true, nonEmpty: true }),
     password: string({ trim: true, nonEmpty: true }),
   }),
-  output: object({
+  outputParser: object({
     user_id: id(),
     username: string(),
   }),
@@ -22,11 +22,12 @@ defAPI('POST', '/users/login', {
 
 defAPI('POST', '/users/register', {
   name: 'register',
-  input: object({
+  inputParser: object({
     username: string({ trim: true, nonEmpty: true }),
     password: string({ trim: true, nonEmpty: true }),
+    tags: array(string({ trim: true, nonEmpty: true })),
   }),
-  output: object({
+  outputParser: object({
     user_id: id(),
     username: string(),
   }),
@@ -36,39 +37,51 @@ defAPI('POST', '/users/register', {
 })
 
 defAPI('GET', '/users/:id/profile', {
-  output: object({
+  inputParser: object({ id: id() }),
+  outputParser: object({
+    username: string(),
+    tags: array(string()),
+  }),
+})
+
+defAPI('PUT', '/users/:id/username', {
+  inputParser: object({
+    id: id(),
     username: string(),
   }),
 })
 
-defAPI('GET', '/booking/services', {
-  output: object({
-    services: array(
-      object({
-        id: id(),
-        title: string(),
-        desc: string(),
-        image: string(),
-      }),
-    ),
+defAPI('POST', '/users/:id/tags', {
+  inputParser: object({
+    id: id(),
+    tag: string(),
   }),
 })
 
-defAPI('POST', '/booking/services/:id/appointment', {
-  name: 'createServiceAppointment',
-  input: object({
-    date: string(),
-    time: string(),
-    provider_id: optional(id()),
-    remark: optional(string({ trim: true })),
+defAPI('DELETE', '/users/:id/tags/:tag', {
+  inputParser: object({
+    id: id(),
+    tag: string(),
   }),
-  fn(input, { id }) {},
+})
+
+defAPI('PATCH', '/users/:id/tags', {
+  inputParser: object({
+    id: id(),
+    from_tag: string(),
+    to_tag: string(),
+  }),
 })
 
 defAPI('GET', '/users/search', {
   name: 'searchUsers',
-  input: object({
+  inputParser: object({
     username: optional(string()),
-    district: optional(string()),
+    tags: optional(array(string(), { maxLength: 7 })),
+    after_id: optional(id()),
+    limit: optional(int({ min: 1, max: 25 })),
+    order: optional(values(['new_first' as const, 'new_last' as const])),
   }),
 })
+
+core.saveSDK()
