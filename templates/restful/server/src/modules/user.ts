@@ -1,9 +1,9 @@
 import { array, id, int, object, optional, string, values } from 'cast.ts'
 import httpStatus from 'http-status'
-import { defModule } from './api'
+import { defModule } from '../api'
 
-export let core = defModule({ name: 'core' })
-let { defAPI } = core
+export let userModule = defModule({ name: 'user' })
+let { defAPI } = userModule
 
 defAPI('POST', '/users/login', {
   name: 'login',
@@ -106,4 +106,4 @@ defAPI('GET', '/users/search', {
   }),
 })
 
-core.saveSDK()
+userModule.saveSDK()

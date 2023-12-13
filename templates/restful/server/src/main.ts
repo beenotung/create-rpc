@@ -2,7 +2,7 @@ import express, { ErrorRequestHandler } from 'express'
 import { print } from 'listening-on'
 import { env } from './env'
 import { HttpError } from './http.error'
-import { core } from './core'
+import { userModule } from './modules/user'
 
 let app = express()
 
@@ -10,7 +10,7 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use(core.apiPrefix, core.router)
+app.use(userModule.apiPrefix, userModule.router)
 
 app.use((req, res, next) =>
   next(
