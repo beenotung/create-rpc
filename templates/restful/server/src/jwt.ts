@@ -3,7 +3,7 @@ import httpStatus from 'http-status'
 import jwt from 'jwt-simple'
 import { Bearer } from 'permit'
 import { env } from './env'
-import { HttpError } from './error'
+import { HttpError } from './http.error'
 
 export type JWTPayload = {
   id: number
