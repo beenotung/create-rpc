@@ -23,9 +23,8 @@
     "url": "https://github.com/beenotung/create-rpc/issues"
   },
   "main": "cli.js",
-  "types": "cli.d.ts",
   "bin": {
-    "create-rpc": "cli.js"
+    "create-rpc": "bin.js"
   },
   "files": [
     "templates",
