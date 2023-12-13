@@ -26,7 +26,7 @@ function post(url: string, body: object, token_?: string) {
       'Accept': 'application/json',
       'Authorization': 'Bearer ' + token_,
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   })
     .then(res => res.json())
     .catch(err => ({ error: String(err) }))
