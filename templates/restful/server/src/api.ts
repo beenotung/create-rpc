@@ -7,6 +7,8 @@ import { genTsType } from 'gen-ts-type'
 import debug from 'debug'
 import { HttpError } from './http.error'
 import { parseTsType } from 'ts-type-check'
+import { proxy } from './proxy'
+import { JWTPayload, checkAdmin, getJWT } from './jwt'
 
 export type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
 
@@ -37,67 +39,9 @@ export function defModule(options: { name?: string; apiPrefix?: string }) {
 // This file is generated automatically
 // Don't edit this file directly
 
-export let server_origin = '${env.ORIGIN}'
+import { call, toParams } from './utils'
 
-export let api_origin = server_origin + '${apiPrefix}'
-
-let store = typeof window == 'undefined' ? null : localStorage
-
-let token = store?.getItem('token')
-
-export function getToken() {
-  return token
-}
-
-export function clearToken() {
-  token = null
-  store?.removeItem('token')
-}
-
-function call(method: string, href: string, body?: object) {
-  let url = api_origin + href
-  let init: RequestInit = {
-    method,
-    headers: {
-      'Accept': 'application/json',
-      'Authorization': 'Bearer ' + getToken(),
-    }
-  }
-  if (body) {
-    Object.assign(init.headers!, {
-      'Content-Type': 'application/json',
-    })
-    init.body = JSON.stringify(body)
-  }
-  return fetch(url, init)
-    .then(res => res.json())
-    .catch(err => ({ error: String(err) }))
-    .then(json => {
-      if (json.error) {
-        return Promise.reject(json.error)
-      }
-      if (json.token) {
-        token = json.token as string
-        store?.setItem('token', token)
-      }
-      return json
-    })
-}
-
-function toParams(input: Record<string, any>) {
-  let params = new URLSearchParams()
-  for (let key in input) {
-    let value = input[key]
-    if (Array.isArray(value)) {
-      for (let val of value) {
-        params.append(key, val)
-      }
-    } else {
-      params.set(key, value)
-    }
-  }
-  return params
-}
+export let api_origin = '${apiPrefix}'
 `
 
   function defAPI<
@@ -118,8 +62,17 @@ function toParams(input: Record<string, any>) {
       sampleOutput?: Output
       inputParser?: Parser<Input>
       outputParser?: Parser<Output>
-      fn?: (input: Input) => Output | Promise<Output>
-    },
+    } & (
+      | {
+          jwt: true
+          role?: 'admin'
+          fn?: (input: Input, jwt: JWTPayload) => Output | Promise<Output>
+        }
+      | {
+          jwt?: false
+          fn?: (input: Input) => Output | Promise<Output>
+        }
+    ),
   ) {
     let name = api?.name
       ? api.name
@@ -164,14 +117,14 @@ function toParams(input: Record<string, any>) {
     let isHasBody = hasBody(method)
     if (isHasBody) {
       bodyCode += `
-  return call('${method}', ${href}, input.body)`
+  return call('${method}', api_origin + ${href}, input.body)`
     } else {
       bodyCode += `
-  return call('${method}', ${href})`
+  return call('${method}', api_origin + ${href})`
     }
 
     code += `
-// ${method} ${url}
+// ${method} ${apiPrefix}${url}
 export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: string }> {
   ${bodyCode.trim()}
 }
@@ -225,8 +178,10 @@ export type ${Name}Output = ${OutputType}
       next: NextFunction,
     ) => {
       let json: Output | { error: string }
+      let startTime = Date.now()
+      let input = req as object
+      let user_id: number | null = null
       try {
-        let input = req as object
         input = parseInput(input)
         log(name, input)
         if (!api?.fn) {
@@ -234,13 +189,30 @@ export type ${Name}Output = ${OutputType}
           res.json(getSampleOutput())
           return
         }
-        json = await api.fn(input as Input)
+        if (api.jwt) {
+          let jwt = getJWT(req)
+          if (api.role == 'admin') checkAdmin(jwt)
+          user_id = jwt.id
+          json = await api.fn(input as Input, jwt)
+        } else {
+          json = await api.fn(input as Input)
+        }
       } catch (error: any) {
         let statusCode = error.statusCode || 500
         res.status(statusCode)
         json = { error: String(error) }
       }
+      let endTime = Date.now()
       res.json(json)
+      proxy.log.push({
+        method,
+        url,
+        input: JSON.stringify(req.body),
+        output: JSON.stringify(json),
+        time_used: endTime - startTime,
+        user_id,
+        user_agent: req.headers['user-agent'] || null,
+      })
     }
 
     router[method.toLowerCase() as 'post'](url, requestHandler)

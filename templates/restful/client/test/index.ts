@@ -1,4 +1,5 @@
-import { getUsersProfile, login, register } from '../src/sdk/core'
+import { getUsersProfile, login, register } from '../src/sdk/user'
+import { getJWTPayload } from '../src/sdk/utils'
 
 async function main() {
   let out1 = await register({
@@ -18,9 +19,11 @@ async function main() {
   })
   console.log('login output:', out2)
 
+  let user_id = getJWTPayload()!.id
+
   let out3 = await getUsersProfile({
     params: {
-      id: out1.user_id,
+      id: user_id,
     },
   })
 

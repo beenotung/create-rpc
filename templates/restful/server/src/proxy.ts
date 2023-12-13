@@ -30,10 +30,25 @@ export type File = {
   original_filename: null | string
 }
 
+export type Tag = {
+  id?: null | number
+  name: string
+}
+
+export type UserTag = {
+  id?: null | number
+  user_id: number
+  user?: User
+  tag_id: number
+  tag?: Tag
+}
+
 export type DBProxy = {
   user: User[]
   log: Log[]
   file: File[]
+  tag: Tag[]
+  user_tag: UserTag[]
 }
 
 export let proxy = proxySchema<DBProxy>({
@@ -47,6 +62,12 @@ export let proxy = proxySchema<DBProxy>({
     file: [
       /* foreign references */
       ['user', { field: 'user_id', table: 'user' }],
+    ],
+    tag: [],
+    user_tag: [
+      /* foreign references */
+      ['user', { field: 'user_id', table: 'user' }],
+      ['tag', { field: 'tag_id', table: 'tag' }],
     ],
   },
 })
