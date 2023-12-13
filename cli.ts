@@ -11,6 +11,7 @@ import { join } from 'path'
 let templates = {
   single: 'single-module' as const,
   multi: 'multi-module' as const,
+  rest: 'restful' as const,
 }
 
 async function askTemplate() {
@@ -22,14 +23,28 @@ async function askTemplate() {
       case '--multi':
         process.argv.splice(i, 1)
         return templates.multi
+      case '--rest':
+        process.argv.splice(i, 1)
+        return templates.rest
     }
   }
   for (;;) {
-    let template = await ask({ question: 'single/multi module template: ' })
+    console.log('Choose a template:')
+    console.log('1. single module template    (--single)')
+    console.log('2. multi module template     (--multi)')
+    console.log('3. restful template          (--rest)')
+    let template = await ask({ question: 'template (num/name): ' })
     template = template.toLowerCase()
-    if (template.startsWith('single')) return templates.single
-    if (template.startsWith('multi')) return templates.multi
-    console.error("Invalid template, expect 'single' or 'multi'")
+    if (template == '1' || template.startsWith('single')) {
+      return templates.single
+    }
+    if (template == '2' || template.startsWith('multi')) {
+      return templates.multi
+    }
+    if (template == '3' || template.startsWith('rest')) {
+      return templates.rest
+    }
+    console.error('Invalid template, expect 1/2/3/single/multi/rest')
   }
 }
 
