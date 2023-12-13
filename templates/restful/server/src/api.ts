@@ -80,7 +80,15 @@ function toParams(input: Record<string, any>) {
 }
 `
 
-  function defAPI<Path extends string, Input = {}, Output = {}>(
+  function defAPI<
+    Path extends string,
+    Input extends {
+      params?: object
+      query?: object
+      body?: object
+    } = {},
+    Output = {},
+  >(
     method: Method,
     url: Path,
     api?: {
@@ -115,32 +123,30 @@ function toParams(input: Record<string, any>) {
       .filter(s => s[0] == ':')
       .map(s => s.substring(1))
 
-    let restKeys = Object.keys(
-      api?.sampleInput ?? api?.inputParser?.sampleValue ?? {},
-    ).filter(key => !params.includes(key))
-
-    params.forEach(s => {
-      href = href.replace(':' + s, '${' + s + '}')
-    })
-
     let bodyCode = ``
-    let rest: string
 
     if (params.length > 0) {
       bodyCode += `
-  let { ${params.join(', ')}, ...rest } = input`
-      rest = 'rest'
+  let { params } = input`
+      for (let param of params) {
+        href = href.replace(':' + param, '${params.' + param + '}')
+      }
+    }
+
+    let hasQuery = InputType.includes('\n  query: {\n')
+    if (hasQuery) {
+      href = '`' + href + '?` + toParams(input.query)'
     } else {
-      rest = 'input'
+      href = '`' + href + '`'
     }
 
     let isHasBody = hasBody(method)
     if (isHasBody) {
       bodyCode += `
-  return call('${method}', \`${href}\`, ${rest})`
+  return call('${method}', ${href}, input.body)`
     } else {
       bodyCode += `
-  return call('${method}', \`${href}?\` + toParams(${rest}))`
+  return call('${method}', ${href})`
     }
 
     code += `
@@ -199,10 +205,10 @@ export type ${Name}Output = ${OutputType}
     ) => {
       let json: Output | { error: string }
       try {
-        let input = {
-          ...req.params,
-          ...req.query,
-          ...req.body,
+        let input = req as {
+          params?: object
+          query?: object
+          body?: object
         }
         input = parseInput(input)
         log(name, input)
@@ -211,7 +217,7 @@ export type ${Name}Output = ${OutputType}
           res.json(getSampleOutput())
           return
         }
-        json = await api.fn(input)
+        json = await api.fn(input as Input)
       } catch (error: any) {
         let statusCode = error.statusCode || 500
         res.status(statusCode)

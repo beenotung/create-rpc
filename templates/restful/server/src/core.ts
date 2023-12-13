@@ -8,8 +8,10 @@ let { defAPI } = core
 defAPI('POST', '/users/login', {
   name: 'login',
   inputParser: object({
-    username: string({ trim: true, nonEmpty: true }),
-    password: string({ trim: true, nonEmpty: true }),
+    body: object({
+      username: string({ trim: true, nonEmpty: true }),
+      password: string({ trim: true, nonEmpty: true }),
+    }),
   }),
   outputParser: object({
     user_id: id(),
@@ -23,9 +25,11 @@ defAPI('POST', '/users/login', {
 defAPI('POST', '/users/register', {
   name: 'register',
   inputParser: object({
-    username: string({ trim: true, nonEmpty: true }),
-    password: string({ trim: true, nonEmpty: true }),
-    tags: array(string({ trim: true, nonEmpty: true })),
+    body: object({
+      username: string({ trim: true, nonEmpty: true }),
+      password: string({ trim: true, nonEmpty: true }),
+      tags: array(string({ trim: true, nonEmpty: true })),
+    }),
   }),
   outputParser: object({
     user_id: id(),
@@ -37,7 +41,11 @@ defAPI('POST', '/users/register', {
 })
 
 defAPI('GET', '/users/:id/profile', {
-  inputParser: object({ id: id() }),
+  inputParser: object({
+    params: object({
+      id: id(),
+    }),
+  }),
   outputParser: object({
     username: string(),
     tags: array(string()),
@@ -46,41 +54,57 @@ defAPI('GET', '/users/:id/profile', {
 
 defAPI('PUT', '/users/:id/username', {
   inputParser: object({
-    id: id(),
-    username: string(),
+    params: object({
+      id: id(),
+    }),
+    body: object({
+      username: string(),
+    }),
   }),
 })
 
 defAPI('POST', '/users/:id/tags', {
   inputParser: object({
-    id: id(),
-    tag: string(),
+    params: object({
+      id: id(),
+    }),
+    body: object({
+      tag: string(),
+    }),
   }),
 })
 
 defAPI('DELETE', '/users/:id/tags/:tag', {
   inputParser: object({
-    id: id(),
-    tag: string(),
+    params: object({
+      id: id(),
+      tag: string(),
+    }),
   }),
 })
 
 defAPI('PATCH', '/users/:id/tags', {
   inputParser: object({
-    id: id(),
-    from_tag: string(),
-    to_tag: string(),
+    params: object({
+      id: id(),
+    }),
+    body: object({
+      from_tag: string(),
+      to_tag: string(),
+    }),
   }),
 })
 
 defAPI('GET', '/users/search', {
   name: 'searchUsers',
   inputParser: object({
-    username: optional(string()),
-    tags: optional(array(string(), { maxLength: 7 })),
-    after_id: optional(id()),
-    limit: optional(int({ min: 1, max: 25 })),
-    order: optional(values(['new_first' as const, 'new_last' as const])),
+    query: object({
+      username: optional(string()),
+      tags: optional(array(string(), { maxLength: 7 })),
+      after_id: optional(id()),
+      limit: optional(int({ min: 1, max: 25 })),
+      order: optional(values(['new_first' as const, 'new_last' as const])),
+    }),
   }),
 })
 

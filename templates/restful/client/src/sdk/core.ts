@@ -45,11 +45,13 @@ function toParams(input: Record<string, any>) {
 
 // POST /users/login
 export function login(input: LoginInput): Promise<LoginOutput & { error?: string }> {
-  return call('POST', `/users/login`, input)
+  return call('POST', `/users/login`, input.body)
 }
 export type LoginInput = {
-  username: string
-  password: string
+  body: {
+    username: string
+    password: string
+  }
 }
 export type LoginOutput = {
   user_id: number
@@ -58,12 +60,14 @@ export type LoginOutput = {
 
 // POST /users/register
 export function register(input: RegisterInput): Promise<RegisterOutput & { error?: string }> {
-  return call('POST', `/users/register`, input)
+  return call('POST', `/users/register`, input.body)
 }
 export type RegisterInput = {
-  username: string
-  password: string
-  tags: Array<string>
+  body: {
+    username: string
+    password: string
+    tags: Array<string>
+  }
 }
 export type RegisterOutput = {
   user_id: number
@@ -72,11 +76,13 @@ export type RegisterOutput = {
 
 // GET /users/:id/profile
 export function getUsersProfile(input: GetUsersProfileInput): Promise<GetUsersProfileOutput & { error?: string }> {
-  let { id, ...rest } = input
-  return call('GET', `/users/${id}/profile?` + toParams(rest))
+  let { params } = input
+  return call('GET', `/users/${params.id}/profile`)
 }
 export type GetUsersProfileInput = {
-  id: number
+  params: {
+    id: number
+  }
 }
 export type GetUsersProfileOutput = {
   username: string
@@ -85,63 +91,79 @@ export type GetUsersProfileOutput = {
 
 // PUT /users/:id/username
 export function putUsersUsername(input: PutUsersUsernameInput): Promise<PutUsersUsernameOutput & { error?: string }> {
-  let { id, ...rest } = input
-  return call('PUT', `/users/${id}/username`, rest)
+  let { params } = input
+  return call('PUT', `/users/${params.id}/username`, input.body)
 }
 export type PutUsersUsernameInput = {
-  id: number
-  username: string
+  params: {
+    id: number
+  }
+  body: {
+    username: string
+  }
 }
 export type PutUsersUsernameOutput = {
 }
 
 // POST /users/:id/tags
 export function postUsersTags(input: PostUsersTagsInput): Promise<PostUsersTagsOutput & { error?: string }> {
-  let { id, ...rest } = input
-  return call('POST', `/users/${id}/tags`, rest)
+  let { params } = input
+  return call('POST', `/users/${params.id}/tags`, input.body)
 }
 export type PostUsersTagsInput = {
-  id: number
-  tag: string
+  params: {
+    id: number
+  }
+  body: {
+    tag: string
+  }
 }
 export type PostUsersTagsOutput = {
 }
 
 // DELETE /users/:id/tags/:tag
 export function deleteUsersTags(input: DeleteUsersTagsInput): Promise<DeleteUsersTagsOutput & { error?: string }> {
-  let { id, tag, ...rest } = input
-  return call('DELETE', `/users/${id}/tags/${tag}?` + toParams(rest))
+  let { params } = input
+  return call('DELETE', `/users/${params.id}/tags/${params.tag}`)
 }
 export type DeleteUsersTagsInput = {
-  id: number
-  tag: string
+  params: {
+    id: number
+    tag: string
+  }
 }
 export type DeleteUsersTagsOutput = {
 }
 
 // PATCH /users/:id/tags
 export function patchUsersTags(input: PatchUsersTagsInput): Promise<PatchUsersTagsOutput & { error?: string }> {
-  let { id, ...rest } = input
-  return call('PATCH', `/users/${id}/tags`, rest)
+  let { params } = input
+  return call('PATCH', `/users/${params.id}/tags`, input.body)
 }
 export type PatchUsersTagsInput = {
-  id: number
-  from_tag: string
-  to_tag: string
+  params: {
+    id: number
+  }
+  body: {
+    from_tag: string
+    to_tag: string
+  }
 }
 export type PatchUsersTagsOutput = {
 }
 
 // GET /users/search
 export function searchUsers(input: SearchUsersInput): Promise<SearchUsersOutput & { error?: string }> {
-  return call('GET', `/users/search?` + toParams(input))
+  return call('GET', `/users/search?` + toParams(input.query))
 }
 export type SearchUsersInput = {
-  username?: string
-  tags?: Array<string>
-  after_id?: number
-  limit?: number
-  order?: "new_first" | "new_last"
+  query: {
+    username?: string
+    tags?: Array<string>
+    after_id?: number
+    limit?: number
+    order?: "new_first" | "new_last"
+  }
 }
 export type SearchUsersOutput = {
 }
