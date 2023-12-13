@@ -3,10 +3,19 @@
 
 export let server_origin = 'http://localhost:8100'
 
-export let api_origin = server_origin + '/api/core'
+export let api_origin = server_origin + '/api'
+
+let store = typeof window == 'undefined' ? null : localStorage
+
+let token = store?.getItem('token')
 
 export function getToken() {
-  return localStorage.getItem('token')
+  return token
+}
+
+export function clearToken() {
+  token = null
+  store?.removeItem('token')
 }
 
 function call(method: string, href: string, body?: object) {
@@ -19,13 +28,24 @@ function call(method: string, href: string, body?: object) {
     }
   }
   if (body) {
-    init.headers!['Content-Type'] = 'application/json'
+    Object.assign(init.headers!, {
+      'Content-Type': 'application/json',
+    })
     init.body = JSON.stringify(body)
   }
   return fetch(url, init)
     .then(res => res.json())
-    .catch(e => ({error: String(e)}))
-    .then(json => json.error ? Promise.reject(json.error) : json)
+    .catch(err => ({ error: String(err) }))
+    .then(json => {
+      if (json.error) {
+        return Promise.reject(json.error)
+      }
+      if (json.token) {
+        token = json.token as string
+        store?.setItem('token', token)
+      }
+      return json
+    })
 }
 
 function toParams(input: Record<string, any>) {
@@ -55,7 +75,6 @@ export type LoginInput = {
 }
 export type LoginOutput = {
   user_id: number
-  username: string
 }
 
 // POST /users/register
@@ -71,7 +90,6 @@ export type RegisterInput = {
 }
 export type RegisterOutput = {
   user_id: number
-  username: string
 }
 
 // GET /users/:id/profile

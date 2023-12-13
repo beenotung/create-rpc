@@ -15,7 +15,6 @@ defAPI('POST', '/users/login', {
   }),
   outputParser: object({
     user_id: id(),
-    username: string(),
   }),
   fn(input) {
     return { user_id: 1 }
@@ -33,7 +32,6 @@ defAPI('POST', '/users/register', {
   }),
   outputParser: object({
     user_id: id(),
-    username: string(),
   }),
   fn(input) {
     return { user_id: 1 }

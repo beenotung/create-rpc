@@ -23,15 +23,15 @@ export function hasBody(method: Method): boolean {
 }
 
 export function defModule(options: { name?: string; apiPrefix?: string }) {
-  let { name: service } = options
+  let name = options.name || 'api'
 
-  let log = debug('api')
+  let log = debug(name)
   log.enabled = true
 
   let router = Router()
   let apiPrefix = options.apiPrefix ?? '/api'
 
-  let file = `../client/src/sdk/${service}.ts`
+  let file = `../client/src/sdk/${name}.ts`
 
   let code = `
 // This file is generated automatically
@@ -39,10 +39,19 @@ export function defModule(options: { name?: string; apiPrefix?: string }) {
 
 export let server_origin = '${env.ORIGIN}'
 
-export let api_origin = server_origin + '${apiPrefix}/${service}'
+export let api_origin = server_origin + '${apiPrefix}'
+
+let store = typeof window == 'undefined' ? null : localStorage
+
+let token = store?.getItem('token')
 
 export function getToken() {
-  return localStorage.getItem('token')
+  return token
+}
+
+export function clearToken() {
+  token = null
+  store?.removeItem('token')
 }
 
 function call(method: string, href: string, body?: object) {
@@ -55,13 +64,24 @@ function call(method: string, href: string, body?: object) {
     }
   }
   if (body) {
-    init.headers!['Content-Type'] = 'application/json'
+    Object.assign(init.headers!, {
+      'Content-Type': 'application/json',
+    })
     init.body = JSON.stringify(body)
   }
   return fetch(url, init)
     .then(res => res.json())
-    .catch(e => ({error: String(e)}))
-    .then(json => json.error ? Promise.reject(json.error) : json)
+    .catch(err => ({ error: String(err) }))
+    .then(json => {
+      if (json.error) {
+        return Promise.reject(json.error)
+      }
+      if (json.token) {
+        token = json.token as string
+        store?.setItem('token', token)
+      }
+      return json
+    })
 }
 
 function toParams(input: Record<string, any>) {
@@ -83,11 +103,12 @@ function toParams(input: Record<string, any>) {
   function defAPI<
     Path extends string,
     Input extends {
+      headers?: object
       params?: object
       query?: object
       body?: object
-    } = {},
-    Output = {},
+    },
+    Output,
   >(
     method: Method,
     url: Path,
@@ -205,11 +226,7 @@ export type ${Name}Output = ${OutputType}
     ) => {
       let json: Output | { error: string }
       try {
-        let input = req as {
-          params?: object
-          query?: object
-          body?: object
-        }
+        let input = req as object
         input = parseInput(input)
         log(name, input)
         if (!api?.fn) {
