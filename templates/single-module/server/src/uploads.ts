@@ -55,8 +55,7 @@ router.post('/', (req, res) => {
           end(400, { error: String(err) })
           return
         }
-        let file = files.file
-        let fileList = Array.isArray(file) ? file : file ? [file] : []
+        let fileList = files.file || []
         end(200, {
           files: fileList.map(file => {
             let row = {
