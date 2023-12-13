@@ -76,7 +76,7 @@ defAPI({
     ),
   }),
   fn() {
-    return { users: select_user_list.all() }
+    return { users: select_user_list.all() as Table<User> }
   },
 })
 
