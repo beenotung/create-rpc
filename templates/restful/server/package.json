@@ -8,6 +8,7 @@
     "test": "tsc --noEmit",
     "build": "tsc -p .",
     "format": "prettier --write . && format-json-cli",
+    "db:setup": "knex migrate:latest && ts-node seed.ts",
     "db:dev": "run-s db:update db:plan db:update",
     "db:plan": "auto-migrate db.sqlite3 < erd.txt",
     "db:update": "knex migrate:latest && erd-to-proxy < erd.txt > src/proxy.ts"
