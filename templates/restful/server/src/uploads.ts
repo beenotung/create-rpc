@@ -84,6 +84,7 @@ router.use(express.static(uploadDir))
 let uploads = {
   router,
   apiPrefix,
+  uploadDir,
 }
 
 export default uploads
