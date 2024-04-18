@@ -13,8 +13,9 @@ let templates = {
   multi: 'multi-module' as const,
   rest: 'restful' as const,
 }
+type Template = (typeof templates)[keyof typeof templates]
 
-async function askTemplate() {
+async function askTemplate(): Promise<Template> {
   for (let i = 2; i < process.argv.length; i++) {
     switch (process.argv[i]) {
       case '--single':
@@ -24,6 +25,7 @@ async function askTemplate() {
         process.argv.splice(i, 1)
         return templates.multi
       case '--rest':
+      case '--restful':
         process.argv.splice(i, 1)
         return templates.rest
     }
@@ -32,7 +34,7 @@ async function askTemplate() {
     console.log('Choose a template:')
     console.log('1. single module template    (--single)')
     console.log('2. multi module template     (--multi)')
-    console.log('3. restful template          (--rest)')
+    console.log('3. restful template          (--restful)')
     let template = await ask({ question: 'template (num/name): ' })
     template = template.toLowerCase()
     if (template == '1' || template.startsWith('single')) {
@@ -44,7 +46,7 @@ async function askTemplate() {
     if (template == '3' || template.startsWith('rest')) {
       return templates.rest
     }
-    console.error('Invalid template, expect 1/2/3/single/multi/rest')
+    console.error('Invalid template, expect 1/2/3/single/multi/restful')
   }
 }
 
@@ -90,14 +92,19 @@ async function main() {
   let readme = readFileSync(join(__dirname, 'README.md'))
     .toString()
     .split('\n')
-    .filter(line => {
-      if (line.trim() === 'or') return false
-      if (template === templates.single && line.includes('server/src/modules/'))
-        return false
-      if (template === templates.multi && line.includes('server/src/core.ts'))
-        return false
-      return true
+    .map(line => {
+      let pattern = '[single module] '
+      if (line.includes(pattern))
+        return template == templates.single ? line.replace(pattern, '') : 'skip'
+      pattern = '[multi module] '
+      if (line.includes(pattern))
+        return template == templates.multi ? line.replace(pattern, '') : 'skip'
+      pattern = '[restful] '
+      if (line.includes(pattern))
+        return template == templates.rest ? line.replace(pattern, '') : 'skip'
+      return line
     })
+    .filter(line => line != 'skip')
     .join('\n')
 
   let idx = readme.indexOf(
@@ -157,7 +164,14 @@ Done.
 
 Created ${dest}/server and ${dest}/client.
 
-${helpMessage.trim()}
+Get started by typing:
+
+  cd ${dest}/server
+  pnpm i
+  npm run db:setup
+  npm start
+
+More help messages see ./help.txt
 `.trim(),
   )
 }
