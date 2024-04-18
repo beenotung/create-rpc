@@ -126,4 +126,27 @@ export type SearchUsersInput = {
   }
 }
 export type SearchUsersOutput = {
+  users: Array<{
+    id: number
+    username: string
+    tags: Array<string>
+  }>
+}
+
+// GET /api/users/:id/txn
+export function getUsersTxn(input: GetUsersTxnInput): Promise<GetUsersTxnOutput & { error?: string }> {
+  let { params } = input
+  return call('GET', api_origin + `/users/${params.id}/txn`)
+}
+export type GetUsersTxnInput = {
+  params: {
+    id: number
+  }
+}
+export type GetUsersTxnOutput = {
+  txnList: Array<{
+    id: number
+    amount: number
+    remark?: null | string
+  }>
 }

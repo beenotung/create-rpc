@@ -19,9 +19,9 @@ defAPI('POST', '/users/register', {
       tags: array(string({ trim: true, nonEmpty: true })),
     }),
   }),
-  outputParser: object({
-    token: string(),
-  }),
+  sampleOutput: {
+    token: 'sample-jwt-token',
+  },
   jwt: false,
   async fn(input) {
     let user = find(proxy.user, { username: input.body.username })
@@ -52,9 +52,9 @@ defAPI('POST', '/users/login', {
       password: string({ trim: true, nonEmpty: true }),
     }),
   }),
-  outputParser: object({
-    token: string(),
-  }),
+  sampleOutput: {
+    token: 'sample-jwt-token',
+  },
   jwt: false,
   async fn(input) {
     let user = find(proxy.user, { username: input.body.username })
@@ -184,6 +184,49 @@ defAPI('GET', '/users/search', {
       order: optional(values(['new_first' as const, 'new_last' as const])),
     }),
   }),
+  sampleOutput: {
+    users: [
+      {
+        id: 1,
+        username: 'alice',
+        tags: ['marketing'],
+      },
+    ],
+  },
+})
+
+defAPI('GET', '/users/:id/txn', {
+  sampleInput: { params: { id: 1 } },
+  sampleOutput: {
+    txnList: [
+      {
+        id: 1,
+        amount: 12.3,
+        remark$nullable$optional: 'demo txn',
+      },
+    ],
+  },
+  jwt: true,
+  fn(input, jwt) {
+    return {
+      txnList: [
+        {
+          id: 1,
+          amount: 12.3,
+          remark: null,
+        },
+        {
+          id: 2,
+          amount: 3.14,
+          remark: 'pi',
+        },
+        {
+          id: 3,
+          amount: 42,
+        },
+      ],
+    }
+  },
 })
 
 userModule.saveSDK()
