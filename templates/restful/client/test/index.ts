@@ -1,5 +1,5 @@
-import { getUsersProfile, login, register } from '../src/sdk/user'
-import { getJWTPayload } from '../src/sdk/utils'
+import { getUsersProfile, login, register } from '../src/api/user'
+import { getJWTPayload } from '../src/api/utils'
 
 async function main() {
   let out1 = await register({
