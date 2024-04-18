@@ -211,6 +211,18 @@ export type ${Name}Output = ${OutputType}
     }
 
     router[method.toLowerCase() as 'post'](url, requestHandler)
+
+    return {
+      method,
+      url,
+      ...api,
+      name,
+      requestHandler,
+      inputParser,
+      outputParser,
+      getSampleInput,
+      getSampleOutput,
+    }
   }
 
   function saveSDK() {
