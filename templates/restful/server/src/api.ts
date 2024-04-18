@@ -40,7 +40,7 @@ export function defModule(options: { name?: string; apiPrefix?: string }) {
   let router = Router()
   let apiPrefix = options.apiPrefix ?? '/api'
 
-  let file = `../client/src/sdk/${name}.ts`
+  let file = `../client/src/api/${name}.ts`
 
   let code = `
 // This file is generated automatically
