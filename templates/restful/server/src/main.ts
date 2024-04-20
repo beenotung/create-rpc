@@ -2,9 +2,9 @@ import express, { ErrorRequestHandler } from 'express'
 import { print } from 'listening-on'
 import { env } from './env'
 import { HttpError } from './http.error'
-import { userModule } from './modules/user'
 import cors from 'cors'
 import uploads from './uploads'
+import { userModule } from './modules/user'
 
 let app = express()
 
