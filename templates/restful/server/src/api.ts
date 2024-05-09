@@ -8,7 +8,7 @@ import { JWTPayload, checkAdmin, getJWT } from './jwt'
 
 export type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
 
-export function hasBody(method: Method): boolean {
+export function canMethodHasBody(method: Method): boolean {
   switch (method) {
     case 'GET':
     case 'DELETE':
@@ -32,15 +32,15 @@ const emptyOutputParser = object({})
 type Result<T> = T | Promise<T>
 
 export function defModule(options: { name?: string; apiPrefix?: string }) {
-  let name = options.name || 'api'
+  let moduleName = options.name || 'api'
 
-  let log = debug(name)
+  let log = debug(moduleName)
   log.enabled = true
 
   let router = Router()
   let apiPrefix = options.apiPrefix ?? '/api'
 
-  let file = `../client/src/api/${name}.ts`
+  let file = `../client/src/api/${moduleName}.ts`
 
   let code = `
 // This file is generated automatically
@@ -131,8 +131,13 @@ export let api_origin = '${apiPrefix}'
       href = '`' + href + '`'
     }
 
-    let isHasBody = hasBody(method)
-    if (isHasBody) {
+    let hasBody = InputType.includes('body:')
+    if (hasBody && !canMethodHasBody(method)) {
+      console.warn(
+        `Warning: HTTP method ${method} cannot have body but used in module: ${moduleName}, api: ${name}`,
+      )
+    }
+    if (hasBody) {
       bodyCode += `
   return call('${method}', api_origin + ${href}, input.body)`
     } else {
