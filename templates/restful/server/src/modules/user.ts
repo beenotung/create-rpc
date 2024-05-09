@@ -87,7 +87,7 @@ defAPI('GET', '/users/:id/profile', {
     return {
       username: user.username,
       tags: filter(proxy.user_tag, { user_id: input.params.id }).map(
-        row => row.tag?.name,
+        row => row.tag!.name,
       ),
     }
   },
