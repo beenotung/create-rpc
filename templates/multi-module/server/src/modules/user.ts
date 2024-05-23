@@ -56,7 +56,14 @@ defAPI({
   },
 })
 
-let select_user_list = db.prepare(/* sql */ `
+let select_user_list = db.prepare<
+  void[],
+  {
+    id: number
+    username: string
+    is_admin: boolean
+  }
+>(/* sql */ `
 select
   id
 , username
@@ -76,7 +83,7 @@ defAPI({
     ),
   }),
   fn() {
-    return { users: select_user_list.all() as Table<User> }
+    return { users: select_user_list.all() }
   },
 })
 

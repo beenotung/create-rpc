@@ -80,7 +80,21 @@ defAPI({
   },
 })
 
-let select_recent_log = db.prepare(/* sql */ `
+let select_recent_log = db.prepare<
+  {
+    username: string
+    last_log_id: number
+    limit: number
+  },
+  {
+    id: number
+    user_id: number
+    username: string
+    timestamp: string
+    rpc: string
+    input: string
+  }
+>(/* sql */ `
 select
   log.id
 , log.user_id
@@ -96,7 +110,13 @@ order by log.id desc
 limit :limit
 `)
 let count_recent_log = db
-  .prepare(
+  .prepare<
+    {
+      username: string
+      last_log_id: number
+    },
+    number
+  >(
     /* sql */ `
 select
   count(*) as count
