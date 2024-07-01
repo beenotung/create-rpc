@@ -162,6 +162,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
   }
 
   function saveClient() {
+    if (env.NODE_ENV != 'development') return
     let dir = join('..', 'client', 'src', 'api')
     saveConfig({
       file: join(dir, 'config.ts'),

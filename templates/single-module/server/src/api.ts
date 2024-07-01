@@ -189,6 +189,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
   }
 
   function saveSDK() {
+    if (env.NODE_ENV != 'development') return
     let content = code.trim() + '\n'
     let file = join('..', 'client', 'src', 'sdk.ts')
     writeFileSync(file, content)

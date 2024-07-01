@@ -5,6 +5,7 @@ import debug from 'debug'
 import { HttpError } from './http.error'
 import { proxy } from './proxy'
 import { JWTPayload, checkAdmin, getJWT } from './jwt'
+import { env } from './env'
 
 export type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
 
@@ -231,6 +232,7 @@ export type ${Name}Output = ${OutputType}
   }
 
   function saveSDK() {
+    if (env.NODE_ENV != 'development') return
     let content = code.trim() + '\n'
     writeFileSync(file, content)
     console.log('saved to', file)
