@@ -1,6 +1,6 @@
 {
   "name": "create-rpc",
-  "version": "1.13.4",
+  "version": "1.13.5",
   "description": "Starter template of Typescript web server with auto-generated client SDK using RPC with ajax.",
   "keywords": [
     "RPC",
