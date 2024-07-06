@@ -1,6 +1,6 @@
 import { getToken, server_origin } from './utils'
 
-export type UploadFile = {
+export type UploadedFile = {
   id: number
   filename: string
   size: number
@@ -8,7 +8,7 @@ export type UploadFile = {
 }
 
 export type UploadFilesOutput = {
-  files: UploadFile[]
+  files: UploadedFile[]
 }
 
 export async function uploadFiles(
