@@ -176,11 +176,12 @@ export type ${Name}Output = ${OutputType}
       res: Response,
       next: NextFunction,
     ) => {
-      let output: InferType<Output> | { error: string }
       let startTime = Date.now()
+      let input: InferType<Input> | undefined
+      let output: InferType<Output> | { error: string }
       let user_id: number | null = null
       try {
-        let input = inputParser.parse(req)
+        input = inputParser.parse(req)
         log(name, input)
         if (!api?.fn) {
           res.status(501)
@@ -205,10 +206,18 @@ export type ${Name}Output = ${OutputType}
       }
       let endTime = Date.now()
       res.json(output)
+      if (!input) {
+        input = {
+          headers: req.headers,
+          params: req.params,
+          query: req.query,
+          body: req.body,
+        } as InferType<Input>
+      }
       proxy.log.push({
         method,
         url,
-        input: JSON.stringify(req.body),
+        input: JSON.stringify(input),
         output: JSON.stringify(output),
         time_used: endTime - startTime,
         user_id,

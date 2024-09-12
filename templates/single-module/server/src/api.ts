@@ -140,10 +140,11 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
     let requestHandler = async (req: Request, res: Response) => {
       log(name, req.body)
       let startTime = Date.now()
+      let input: InferType<Input> | undefined
       let output: InferType<Output> | { error: string }
       let user_id: number | null = null
       try {
-        let body = inputParser.parse(req.body)
+        input = inputParser.parse(req.body)
         if (!api.fn) {
           res.status(501)
           res.json(getSampleOutput())
@@ -153,9 +154,9 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
           let jwt = getJWT(req)
           if (api.role == 'admin') checkAdmin(jwt)
           user_id = jwt.id
-          output = await api.fn(body, jwt)
+          output = await api.fn(input, jwt)
         } else {
-          output = await api.fn(body)
+          output = await api.fn(input)
         }
         output = outputParser.parse(output)
       } catch (e: any) {
@@ -167,9 +168,12 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       }
       let endTime = Date.now()
       res.json(output)
+      if (!input) {
+        input = req.body
+      }
       proxy.log.push({
         rpc: name,
-        input: JSON.stringify(req.body),
+        input: JSON.stringify(input),
         output: JSON.stringify(output),
         time_used: endTime - startTime,
         user_id,
