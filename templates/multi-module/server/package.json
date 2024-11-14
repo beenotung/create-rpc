@@ -41,7 +41,7 @@
     "bcryptjs": "^2.4.3",
     "better-sqlite3-proxy": "^2.10.0",
     "better-sqlite3-schema": "^3.1.7",
-    "cast.ts": "^1.14.2",
+    "cast.ts": "^1.14.3",
     "cors": "^2.8.5",
     "debug": "^4.3.7",
     "dotenv": "^16.4.5",
