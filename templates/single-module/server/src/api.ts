@@ -79,11 +79,11 @@ function post(url: string, body: object, token_?: string) {
           fn?: (
             input: InferType<Input>,
             jwt: JWTPayload,
-          ) => Result<InferType<Output>>
+          ) => Result<InferType<NoInfer<Output>>>
         }
       | {
           jwt?: false
-          fn?: (input: InferType<Input>) => Result<InferType<Output>>
+          fn?: (input: InferType<Input>) => Result<InferType<NoInfer<Output>>>
         }
     ),
   ) {

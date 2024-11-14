@@ -52,11 +52,11 @@ let api_origin = '${apiPrefix}'
           fn?: (
             input: InferType<Input>,
             jwt: JWTPayload,
-          ) => Result<InferType<Output>>
+          ) => Result<InferType<NoInfer<Output>>>
         }
       | {
           jwt?: false
-          fn?: (input: InferType<Input>) => Result<InferType<Output>>
+          fn?: (input: InferType<Input>) => Result<InferType<NoInfer<Output>>>
         }
     ),
   ) {
