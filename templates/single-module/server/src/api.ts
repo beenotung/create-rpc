@@ -72,6 +72,8 @@ function post(url: string, body: object, token_?: string) {
       sampleOutput?: Output
       inputParser?: Parser<InferType<Input>>
       outputParser?: Parser<InferType<Output>>
+      transformInputForLog?: (input: Partial<InferType<Input>>) => unknown
+      transformOutputForLog?: (output: Partial<InferType<Output>>) => unknown
     } & (
       | {
           jwt: true
@@ -138,13 +140,16 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
     }
 
     let requestHandler = async (req: Request, res: Response) => {
-      log(name, req.body)
       let startTime = Date.now()
       let input: InferType<Input> | undefined
       let output: InferType<Output> | { error: string }
       let user_id: number | null = null
       try {
         input = inputParser.parse(req.body)
+        log(
+          name,
+          api?.transformInputForLog ? api.transformInputForLog(input) : input,
+        )
         if (!api.fn) {
           res.status(501)
           res.json(getSampleOutput())
@@ -173,8 +178,19 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       }
       proxy.log.push({
         rpc: name,
-        input: JSON.stringify(input),
-        output: JSON.stringify(output),
+        input: JSON.stringify(
+          api?.transformInputForLog && input
+            ? api.transformInputForLog(input)
+            : input,
+        ),
+        output: JSON.stringify(
+          api?.transformOutputForLog &&
+            output &&
+            typeof output == 'object' &&
+            !('error' in output)
+            ? api.transformOutputForLog(output)
+            : output,
+        ),
         time_used: endTime - startTime,
         user_id,
         user_agent: req.headers['user-agent'] || null,

@@ -10,6 +10,21 @@ import { encodeJWT } from '../jwt'
 export let userModule = defModule({ name: 'user' })
 let { defAPI } = userModule
 
+let maskPassword = (input: { body?: { password?: string } }) => {
+  if (!input.body?.password) {
+    return input
+  }
+  let { password, ...rest } = input.body
+  password = '*'.repeat(password.length)
+  return {
+    ...input,
+    body: {
+      ...rest,
+      password,
+    },
+  }
+}
+
 defAPI('POST', '/users/register', {
   name: 'register',
   inputParser: object({
@@ -22,6 +37,7 @@ defAPI('POST', '/users/register', {
   sampleOutput: {
     token: 'sample-jwt-token',
   },
+  transformInputForLog: maskPassword,
   jwt: false,
   async fn(input) {
     let user = find(proxy.user, { username: input.body.username })
@@ -55,6 +71,7 @@ defAPI('POST', '/users/login', {
   sampleOutput: {
     token: 'sample-jwt-token',
   },
+  transformInputForLog: maskPassword,
   jwt: false,
   async fn(input) {
     let user = find(proxy.user, { username: input.body.username })

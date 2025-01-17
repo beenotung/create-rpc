@@ -70,6 +70,8 @@ export let api_origin = '${apiPrefix}'
       sampleOutput?: Output
       inputParser?: Parser<InferType<Input>>
       outputParser?: Parser<InferType<Output>>
+      transformInputForLog?: (input: Partial<InferType<Input>>) => unknown
+      transformOutputForLog?: (output: Partial<InferType<Output>>) => unknown
     } & (
       | {
           jwt: true
@@ -182,7 +184,10 @@ export type ${Name}Output = ${OutputType}
       let user_id: number | null = null
       try {
         input = inputParser.parse(req)
-        log(name, input)
+        log(
+          name,
+          api?.transformInputForLog ? api.transformInputForLog(input) : input,
+        )
         if (!api?.fn) {
           res.status(501)
           res.json(getSampleOutput())
@@ -217,8 +222,17 @@ export type ${Name}Output = ${OutputType}
       proxy.log.push({
         method,
         url,
-        input: JSON.stringify(input),
-        output: JSON.stringify(output),
+        input: JSON.stringify(
+          api?.transformInputForLog ? api.transformInputForLog(input) : input,
+        ),
+        output: JSON.stringify(
+          api?.transformOutputForLog &&
+            output &&
+            typeof output == 'object' &&
+            !('error' in output)
+            ? api.transformOutputForLog(output)
+            : output,
+        ),
         time_used: endTime - startTime,
         user_id,
         user_agent: req.headers['user-agent'] || null,

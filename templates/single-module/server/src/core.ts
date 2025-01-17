@@ -1,5 +1,14 @@
 import { find, Table } from 'better-sqlite3-proxy'
-import { array, boolean, id, nullable, object, optional, string } from 'cast.ts'
+import {
+  array,
+  boolean,
+  id,
+  nullable,
+  object,
+  optional,
+  ParseResult,
+  string,
+} from 'cast.ts'
 import httpStatus from 'http-status'
 import { defModule } from './api'
 import { db } from './db'
@@ -25,10 +34,19 @@ let authParser = object({
   password: string({ minLength: 6, maxLength: 256, sampleValue: 'secret' }),
 })
 
+let maskPassword = (input: Partial<ParseResult<typeof authParser>>) => {
+  let { password, ...rest } = input
+  if (password) {
+    password = '*'.repeat(password.length)
+  }
+  return { ...rest, password }
+}
+
 defAPI({
   name: 'register',
   inputParser: authParser,
   sampleOutput: { token: 'a-jwt-string' },
+  transformInputForLog: maskPassword,
   fn: async input => {
     let user = find(proxy.user, { username: input.username })
     if (user)
@@ -50,6 +68,7 @@ defAPI({
   name: 'login',
   inputParser: authParser,
   sampleOutput: { token: 'a-jwt-string' },
+  transformInputForLog: maskPassword,
   async fn(input) {
     let user = find(proxy.user, { username: input.username })
     if (!user) throw new HttpError(404, 'this username is not used')
