@@ -58,7 +58,10 @@ let api_origin = '${apiPrefix}'
         }
       | {
           jwt?: false
-          fn?: (input: InferType<Input>) => Result<InferType<NoInfer<Output>>>
+          fn?: (
+            input: InferType<Input>,
+            jwt: JWTPayload | null,
+          ) => Result<InferType<NoInfer<Output>>>
         }
     ),
   ) {
@@ -116,7 +119,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
       let startTime = Date.now()
       let input: InferType<Input> | undefined
       let output: InferType<Output> | { error: string }
-      let user_id: number | null = null
+      let jwt: JWTPayload | null = null
       try {
         input = inputParser.parse(req.body)
         log(
@@ -129,12 +132,16 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
           return
         }
         if (api.jwt) {
-          let jwt = getJWT(req)
+          jwt = getJWT(req)
           if (api.role == 'admin') checkAdmin(jwt)
-          user_id = jwt.id
           output = await api.fn(input, jwt)
         } else {
-          output = await api.fn(input)
+          try {
+            jwt = getJWT(req)
+          } catch (error) {
+            // api from guest
+          }
+          output = await api.fn(input, jwt)
         }
         output = outputParser.parse(output)
       } catch (e: any) {
@@ -165,7 +172,7 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
             : output,
         ),
         time_used: endTime - startTime,
-        user_id,
+        user_id: jwt ? jwt.id : null,
         user_agent: req.headers['user-agent'] || null,
       })
     }
