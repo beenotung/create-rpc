@@ -5,6 +5,7 @@ import { mkdirSync } from 'fs'
 import { proxy } from './proxy'
 import { getJWT } from './jwt'
 import debug from 'debug'
+import { mimeToExt } from 'mime-detect'
 
 let log = debug('uploadFiles')
 log.enabled = true
@@ -41,13 +42,9 @@ router.post('/', (req, res) => {
       filter: part => part.name === 'file',
       multiples: true,
       filename: (name, ext, part, form) => {
-        let extname = part.mimetype?.split('/').pop()?.split(';')[0]
-        if (extname === 'octet-stream') {
-          extname = ''
-        }
-        extname ||= 'bin'
+        let extname = part.mimetype ? mimeToExt(part.mimetype) : null
         let filename = randomUUID()
-        return `${filename}.${extname}`
+        return extname ? `${filename}.${extname}` : filename
       },
     })
     form.parse(req, (err, fields, files) => {
