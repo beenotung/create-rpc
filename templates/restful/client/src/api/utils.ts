@@ -30,8 +30,9 @@ export function call(method: string, href: string, body?: object) {
   let init: RequestInit = {
     method,
     headers: {
-      Accept: 'application/json',
-      Authorization: 'Bearer ' + getToken(),
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + getToken(),
+      'Cache-Control': 'no-cache',
     },
   }
   if (body) {
