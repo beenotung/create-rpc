@@ -8,7 +8,10 @@ config()
 export let env = {
   NODE_ENV: 'development',
   ORIGIN: 'http://localhost:3000',
+  /** for auto download uploads from remote server */
+  REMOTE_ORIGIN: 'skip',
   PORT: 3000,
+  /** default a newly generated random UUID */
   JWT_SECRET: process.env.JWT_SECRET || '',
 }
 

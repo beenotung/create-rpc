@@ -38,6 +38,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "@beenotung/tslib": "^24.13.1",
     "bcryptjs": "^2.4.3",
     "better-sqlite3-proxy": "^2.10.0",
     "better-sqlite3-schema": "^3.1.7",

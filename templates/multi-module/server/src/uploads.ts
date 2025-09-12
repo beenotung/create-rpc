@@ -6,6 +6,9 @@ import { proxy } from './proxy'
 import { getJWT } from './jwt'
 import debug from 'debug'
 import { mimeToExt } from 'mime-detect'
+import { env } from './env'
+import { join } from 'path'
+import { download_file } from '@beenotung/tslib/download-file'
 
 let log = debug('uploadFiles')
 log.enabled = true
@@ -75,7 +78,20 @@ router.post('/', (req, res) => {
   }
 })
 
-router.use(express.static(uploadDir))
+let static_router = express.static(uploadDir)
+router.use(static_router)
+if (env.REMOTE_ORIGIN !== 'skip') {
+  router.use(async (req, res, next) => {
+    try {
+      let remote_url = env.REMOTE_ORIGIN + apiPrefix + req.url
+      let local_file = join(uploadDir, req.url)
+      await download_file(remote_url, local_file)
+      static_router(req, res, next)
+    } catch (error) {
+      next(error)
+    }
+  })
+}
 
 let uploads = {
   router,
