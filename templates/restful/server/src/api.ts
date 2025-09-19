@@ -211,7 +211,7 @@ export type ${Name}Output = ${OutputType}
         output = outputParser.parse(output)
       } catch (e: any) {
         let err = e as HttpError
-        if (!err.statusCode) console.error(err)
+        if (!err.statusCode) log(err)
         res.status(err.statusCode || 500)
         let error = String(err).replace(/^(\w*)Error: /, '')
         output = { error }
