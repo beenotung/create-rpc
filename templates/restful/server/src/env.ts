@@ -3,7 +3,7 @@ import populateEnv from 'populate-env'
 import { randomUUID } from 'crypto'
 import { appendFileSync } from 'fs'
 
-config()
+config({ quiet: true })
 
 export let env = {
   NODE_ENV: 'development',
