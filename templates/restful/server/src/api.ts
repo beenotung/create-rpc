@@ -261,7 +261,7 @@ export type ${Name}Output = ${OutputType}
     }
   }
 
-  function saveSDK() {
+  function saveClient() {
     if (env.NODE_ENV != 'development') return
     let content = code.trim() + '\n'
     writeFileSync(file, content)
@@ -270,7 +270,7 @@ export type ${Name}Output = ${OutputType}
 
   return {
     defAPI,
-    saveSDK,
+    saveClient,
     apiPrefix,
     router,
   }

@@ -246,4 +246,4 @@ defAPI('GET', '/users/:id/txn', {
   },
 })
 
-userModule.saveSDK()
+userModule.saveClient()
