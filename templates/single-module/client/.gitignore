@@ -1,7 +1,11 @@
 node_modules/
-*-lock.*
+dist/
+*-lock.json
+*-lock.yaml
 *.lock
 .*-debug.log
 *.tsbuildinfo
 .env
 test/upload-demo.js
+*.tgz
+.DS_Store

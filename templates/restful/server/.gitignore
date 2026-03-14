@@ -10,3 +10,5 @@ db.sqlite3
 db.sqlite3-shm
 db.sqlite3-wal
 uploads/
+*.tgz
+.DS_Store

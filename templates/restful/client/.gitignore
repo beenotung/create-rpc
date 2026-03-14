@@ -6,6 +6,6 @@ dist/
 .*-debug.log
 *.tsbuildinfo
 .env
+test/upload-demo.js
 *.tgz
 .DS_Store
-test/upload-demo.js
