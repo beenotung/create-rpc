@@ -20,7 +20,6 @@ export function post(url: string, body: object, token_?: string) {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer ' + token_,
-      'Cache-Control': 'no-cache',
     },
     body: JSON.stringify(body),
   })
