@@ -1,7 +1,7 @@
 import { Parser, inferFromSampleValue, object, InferType } from 'cast.ts'
 import debug from 'debug'
 import { Router, Request, Response } from 'express'
-import { writeFileSync } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { env } from './env'
 import { checkAdmin, getJWT, JWTPayload } from './jwt'
@@ -15,6 +15,8 @@ type Result<T> = T | Promise<T>
 export function defModule(options?: { apiPrefix?: string }) {
   let log = debug('api')
   log.enabled = true
+
+  let clientFile = join('..', 'client', 'src', 'sdk.ts')
 
   let router = Router()
   let apiPrefix = options?.apiPrefix || '/api'
@@ -217,10 +219,10 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
 
   function saveSDK() {
     if (env.NODE_ENV != 'development') return
-    let content = code.trim() + '\n'
-    let file = join('..', 'client', 'src', 'sdk.ts')
-    writeFileSync(file, content)
-    console.log('saved to', file)
+    saveFile({
+      file: clientFile,
+      code,
+    })
   }
 
   return {
@@ -229,4 +231,17 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
     apiPrefix,
     router,
   }
+}
+
+function saveFile(options: { file: string; code: string }) {
+  let { file, code } = options
+  code = code.trim() + '\n'
+  try {
+    let content = readFileSync(file).toString()
+    if (content == code) return
+  } catch (error) {
+    // e.g. file not exist
+  }
+  writeFileSync(file, code)
+  console.log('saved to', file)
 }

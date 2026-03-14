@@ -8,26 +8,22 @@ import { HttpError } from './error'
 import { checkAdmin, getJWT, JWTPayload } from './jwt'
 import { proxy } from './proxy'
 
-function saveConfig(options: { file: string }) {
-  let code = `
-// This file is generated automatically
-// Don't edit this file directly
-
-export let server_origin = '${env.ORIGIN}'
-`
-  saveFile({ file: options.file, code })
-}
-
 const emptyParser = object({})
 
 type Result<T> = T | Promise<T>
 
-export function defModule(options: { apiPrefix?: string; name: string }) {
-  let log = debug('api')
+export function defModule(options: { name: string; apiPrefix?: string }) {
+  let moduleName = options.name
+
+  let log = debug(moduleName)
   log.enabled = true
 
+  let dir = join('..', 'client', 'src', 'api')
+  let clientFile = join(dir, `${moduleName}.ts`)
+  let configFile = join(dir, 'config.ts')
+
   let router = Router()
-  let apiPrefix = options?.apiPrefix || `/api/${options.name}`
+  let apiPrefix = options.apiPrefix ?? `/api/${moduleName}`
 
   let code = `
 // This file is generated automatically
@@ -190,12 +186,11 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
 
   function saveClient() {
     if (env.NODE_ENV != 'development') return
-    let dir = join('..', 'client', 'src', 'api')
     saveConfig({
-      file: join(dir, 'config.ts'),
+      file: configFile,
     })
     saveFile({
-      file: join(dir, options.name + '.ts'),
+      file: clientFile,
       code,
     })
   }
@@ -208,7 +203,17 @@ export function ${name}(input: ${Name}Input): Promise<${Name}Output & { error?: 
   }
 }
 
-function saveFile(options: { code: string; file: string }) {
+function saveConfig(options: { file: string }) {
+  let code = `
+// This file is generated automatically
+// Don't edit this file directly
+
+export let server_origin = '${env.ORIGIN}'
+`
+  saveFile({ file: options.file, code })
+}
+
+function saveFile(options: { file: string; code: string }) {
   let { file, code } = options
   code = code.trim() + '\n'
   try {

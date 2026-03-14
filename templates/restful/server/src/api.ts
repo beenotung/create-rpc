@@ -1,7 +1,8 @@
 import { InferType, Parser, inferFromSampleValue, object } from 'cast.ts'
 import { NextFunction, Request, Response, Router } from 'express'
-import { writeFileSync } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import debug from 'debug'
+import { join } from 'path'
 import { HttpError } from './http.error'
 import { proxy } from './proxy'
 import { JWTPayload, checkAdmin, getJWT } from './jwt'
@@ -32,16 +33,18 @@ const emptyOutputParser = object({})
 
 type Result<T> = T | Promise<T>
 
-export function defModule(options: { name?: string; apiPrefix?: string }) {
-  let moduleName = options.name || 'api'
+export function defModule(options: { name: string; apiPrefix?: string }) {
+  let moduleName = options.name
 
   let log = debug(moduleName)
   log.enabled = true
 
+  let dir = join('..', 'client', 'src', 'api')
+  let clientFile = join(dir, `${moduleName}.ts`)
+  let configFile = join(dir, 'config.ts')
+
   let router = Router()
   let apiPrefix = options.apiPrefix ?? '/api'
-
-  let file = `../client/src/api/${moduleName}.ts`
 
   let code = `
 // This file is generated automatically
@@ -263,9 +266,13 @@ export type ${Name}Output = ${OutputType}
 
   function saveClient() {
     if (env.NODE_ENV != 'development') return
-    let content = code.trim() + '\n'
-    writeFileSync(file, content)
-    console.log('saved to', file)
+    saveConfig({
+      file: configFile,
+    })
+    saveFile({
+      file: clientFile,
+      code,
+    })
   }
 
   return {
@@ -274,4 +281,27 @@ export type ${Name}Output = ${OutputType}
     apiPrefix,
     router,
   }
+}
+
+function saveConfig(options: { file: string }) {
+  let code = `
+// This file is generated automatically
+// Don't edit this file directly
+
+export let server_origin = '${env.ORIGIN}'
+`
+  saveFile({ file: options.file, code })
+}
+
+function saveFile(options: { file: string; code: string }) {
+  let { file, code } = options
+  code = code.trim() + '\n'
+  try {
+    let content = readFileSync(file).toString()
+    if (content == code) return
+  } catch (error) {
+    // e.g. file not exist
+  }
+  writeFileSync(file, code)
+  console.log('saved to', file)
 }
