@@ -1,6 +1,5 @@
 import { jwtDecode } from 'jwt-decode'
-
-export let server_origin = 'http://localhost:3000'
+import { server_origin } from './config'
 
 export type JWTPayload = {
   id: number

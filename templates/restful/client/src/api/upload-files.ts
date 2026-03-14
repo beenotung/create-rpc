@@ -1,4 +1,5 @@
-import { getToken, server_origin } from './utils'
+import { server_origin } from './config'
+import { getToken } from './utils'
 
 export type UploadedFile = {
   id: number
