@@ -12,4 +12,3 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use(core.apiPrefix, core.router)
 app.use(uploads.apiPrefix, uploads.router)
-app.get('/', (req, res) => res.redirect('/upload.html'))
