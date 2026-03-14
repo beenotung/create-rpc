@@ -12,3 +12,6 @@ cp_gitignore templates/multi-module/server
 
 cp_gitignore templates/single-module/client
 cp_gitignore templates/single-module/server
+
+cp_gitignore templates/restful/client
+cp_gitignore templates/restful/server
