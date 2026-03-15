@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "build:demo": "esbuild --bundle test/upload-demo.ts > test/upload-demo.js",
     "test": "tsc --noEmit",
