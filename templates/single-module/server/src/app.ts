@@ -10,5 +10,5 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use(core.apiPrefix, core.router)
 app.use(uploads.apiPrefix, uploads.router)
+app.use(core.apiPrefix, core.router)

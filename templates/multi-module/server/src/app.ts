@@ -16,7 +16,7 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
+attachApp(uploads)
 attachApp(demo)
 attachApp(log)
 attachApp(user)
-attachApp(uploads)
