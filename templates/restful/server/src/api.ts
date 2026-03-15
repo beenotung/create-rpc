@@ -216,7 +216,7 @@ export type ${Name}Output = ${OutputType}
         let err = e as HttpError
         if (!err.statusCode) log(err)
         res.status(err.statusCode || 500)
-        let error = String(err).replace(/^(\w*)Error: /, '')
+        let error = HttpError.toString(err)
         output = { error }
       }
       let endTime = Date.now()

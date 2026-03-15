@@ -9,6 +9,7 @@ import { mimeToExt } from 'mime-detect'
 import { env } from './env'
 import { join } from 'path'
 import { download_file } from '@beenotung/tslib/download-file'
+import { HttpError } from './error'
 
 let log = debug('uploadFiles')
 log.enabled = true
@@ -52,7 +53,7 @@ router.post('/', (req, res) => {
     form.parse(req, (err, fields, files) => {
       try {
         if (err) {
-          end(400, { error: String(err) })
+          end(400, { error: HttpError.toString(err) })
           return
         }
         let fileList = files.file || []
@@ -69,12 +70,14 @@ router.post('/', (req, res) => {
             return { id, ...row }
           }),
         })
-      } catch (error) {
-        end(500, { error: String(error) })
+      } catch (err) {
+        let error = HttpError.from(err)
+        end(error.statusCode, { error: HttpError.toString(error) })
       }
     })
-  } catch (error) {
-    end(500, { error: String(error) })
+  } catch (err) {
+    let error = HttpError.from(err)
+    end(error.statusCode, { error: HttpError.toString(error) })
   }
 })
 
