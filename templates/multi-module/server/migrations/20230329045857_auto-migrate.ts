@@ -1,5 +1,6 @@
 import { Knex } from 'knex'
 
+// prettier-ignore
 export async function up(knex: Knex): Promise<void> {
   if (!(await knex.schema.hasTable('log'))) {
     await knex.schema.createTable('log', table => {
@@ -14,6 +15,7 @@ export async function up(knex: Knex): Promise<void> {
   }
 }
 
+// prettier-ignore
 export async function down(knex: Knex): Promise<void> {
   await knex.schema.dropTableIfExists('log')
 }
