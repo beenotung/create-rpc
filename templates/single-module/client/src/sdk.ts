@@ -3,7 +3,12 @@
 
 export let server_origin = 'http://localhost:3000'
 
-let api_origin = 'http://localhost:3000/api'
+let api_origin = server_origin + '/api'
+
+export function setServerOrigin(origin: string) {
+  server_origin = origin
+  api_origin = origin + '/api'
+}
 
 let store = typeof window == 'undefined' ? null : localStorage
 
@@ -59,8 +64,10 @@ export type GreetInput = {
 export type GreetOutput = {
   message: string
 }
-export function greet(input: GreetInput): Promise<GreetOutput & { error?: string }> {
-	return post('/greet', input)
+export function greet(
+  input: GreetInput,
+): Promise<GreetOutput & { error?: string }> {
+  return post('/greet', input)
 }
 
 export type RegisterInput = {
@@ -70,8 +77,10 @@ export type RegisterInput = {
 export type RegisterOutput = {
   token: string
 }
-export function register(input: RegisterInput): Promise<RegisterOutput & { error?: string }> {
-	return post('/register', input)
+export function register(
+  input: RegisterInput,
+): Promise<RegisterOutput & { error?: string }> {
+  return post('/register', input)
 }
 
 export type LoginInput = {
@@ -81,12 +90,13 @@ export type LoginInput = {
 export type LoginOutput = {
   token: string
 }
-export function login(input: LoginInput): Promise<LoginOutput & { error?: string }> {
-	return post('/login', input)
+export function login(
+  input: LoginInput,
+): Promise<LoginOutput & { error?: string }> {
+  return post('/login', input)
 }
 
-export type GetUserListInput = {
-}
+export type GetUserListInput = {}
 export type GetUserListOutput = {
   users: Array<{
     id: number
@@ -94,8 +104,10 @@ export type GetUserListOutput = {
     is_admin: boolean
   }>
 }
-export function getUserList(input: GetUserListInput): Promise<GetUserListOutput & { error?: string }> {
-	return post('/getUserList', input)
+export function getUserList(
+  input: GetUserListInput,
+): Promise<GetUserListOutput & { error?: string }> {
+  return post('/getUserList', input)
 }
 
 export type GetRecentLogsInput = {
@@ -114,15 +126,17 @@ export type GetRecentLogsOutput = {
   }>
   remains: number
 }
-export function getRecentLogs(input: GetRecentLogsInput & { token: string }): Promise<GetRecentLogsOutput & { error?: string }> {
+export function getRecentLogs(
+  input: GetRecentLogsInput & { token: string },
+): Promise<GetRecentLogsOutput & { error?: string }> {
   let { token, ...body } = input
-	return post('/getRecentLogs', body, token)
+  return post('/getRecentLogs', body, token)
 }
 
-export type DemoInput = {
-}
-export type DemoOutput = {
-}
-export function demo(input: DemoInput): Promise<DemoOutput & { error?: string }> {
-	return post('/demo', input)
+export type DemoInput = {}
+export type DemoOutput = {}
+export function demo(
+  input: DemoInput,
+): Promise<DemoOutput & { error?: string }> {
+  return post('/demo', input)
 }

@@ -27,7 +27,12 @@ export function defModule(options?: { apiPrefix?: string }) {
 
 export let server_origin = '${env.ORIGIN}'
 
-let api_origin = '${env.ORIGIN}${apiPrefix}'
+let api_origin = server_origin + '${apiPrefix}'
+
+export function setServerOrigin(origin: string) {
+  server_origin = origin
+  api_origin = origin + '${apiPrefix}'
+}
 
 let store = typeof window == 'undefined' ? null : localStorage
 

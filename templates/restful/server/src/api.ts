@@ -289,6 +289,10 @@ function saveConfig(options: { file: string }) {
 // Don't edit this file directly
 
 export let server_origin = '${env.ORIGIN}'
+
+export function setServerOrigin(origin: string) {
+  server_origin = origin
+}
 `
   saveFile({ file: options.file, code })
 }
