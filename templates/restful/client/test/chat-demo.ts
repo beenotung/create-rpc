@@ -57,7 +57,7 @@ sendButton.addEventListener('click', () => {
 })
 
 onWSMessage('room_message', message => {
-  if (message.type !== 'room_message') return
+  if (message.type !== 'room_message') return // for type inference
   showMessage(message)
 
   if (
