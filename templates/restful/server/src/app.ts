@@ -1,6 +1,8 @@
 import cors from 'cors'
 import express, { Router } from 'express'
 import { userModule } from './modules/user'
+import { demoModule } from './modules/demo'
+import { logModule } from './modules/log'
 import uploads from './uploads'
 
 export let app = express()
@@ -16,3 +18,5 @@ app.use(express.urlencoded({ extended: false }))
 
 attachApp(uploads)
 attachApp(userModule)
+attachApp(demoModule)
+attachApp(logModule)
