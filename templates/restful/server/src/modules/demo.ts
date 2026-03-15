@@ -1,3 +1,6 @@
+/**
+ * Demo input output of API
+ */
 import { int, object, string } from 'cast.ts'
 import { defModule } from '../api'
 

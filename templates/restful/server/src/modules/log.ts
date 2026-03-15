@@ -1,3 +1,6 @@
+/**
+ * Demo using database query with prepared statement
+ */
 import { int, object, optional, string } from 'cast.ts'
 import { defModule } from '../api'
 import { db } from '../db'

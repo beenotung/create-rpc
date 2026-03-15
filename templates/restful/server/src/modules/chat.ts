@@ -1,3 +1,6 @@
+/**
+ * Demo using WebSocket and REST for real-time chat
+ */
 import { array, id, int, object, string } from 'cast.ts'
 import { defModule } from '../api'
 import { defWSHandler } from '../ws/handler'

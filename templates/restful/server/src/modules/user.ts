@@ -1,3 +1,6 @@
+/**
+ * Demo using database proxy
+ */
 import { array, id, int, object, optional, string, values } from 'cast.ts'
 import httpStatus from 'http-status'
 import { defModule } from '../api'
