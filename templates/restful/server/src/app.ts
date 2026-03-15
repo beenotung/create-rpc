@@ -4,6 +4,7 @@ import { userModule } from './modules/user'
 import { demoModule } from './modules/demo'
 import { logModule } from './modules/log'
 import uploads from './uploads'
+import { chatModule } from './modules/chat'
 
 export let app = express()
 
@@ -20,3 +21,4 @@ attachApp(uploads)
 attachApp(userModule)
 attachApp(demoModule)
 attachApp(logModule)
+attachApp(chatModule)

@@ -7,5 +7,6 @@ dist/
 *.tsbuildinfo
 .env
 test/upload-demo.js
+test/chat-demo.js
 *.tgz
 .DS_Store
