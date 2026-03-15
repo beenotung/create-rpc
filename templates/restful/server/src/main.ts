@@ -1,20 +1,8 @@
-import express, { ErrorRequestHandler } from 'express'
 import { print } from 'listening-on'
+import { ErrorRequestHandler } from 'express'
 import { env } from './env'
+import { app } from './app'
 import { HttpError } from './http.error'
-import cors from 'cors'
-import uploads from './uploads'
-import { userModule } from './modules/user'
-
-let app = express()
-
-app.use(cors())
-app.use(express.static('public'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-
-app.use(uploads.apiPrefix, uploads.router)
-app.use(userModule.apiPrefix, userModule.router)
 
 app.use((req, res, next) =>
   next(
