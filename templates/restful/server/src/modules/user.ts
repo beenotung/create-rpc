@@ -3,7 +3,7 @@ import httpStatus from 'http-status'
 import { defModule } from '../api'
 import { filter, find, seedRow } from 'better-sqlite3-proxy'
 import { proxy } from '../proxy'
-import { HttpError } from '../http.error'
+import { HttpError } from '../error'
 import { comparePassword, hashPassword } from '../hash'
 import { encodeJWT } from '../jwt'
 

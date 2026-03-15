@@ -2,7 +2,7 @@ import { print } from 'listening-on'
 import { ErrorRequestHandler } from 'express'
 import { env } from './env'
 import { app } from './app'
-import { HttpError } from './http.error'
+import { HttpError } from './error'
 
 app.use((req, res, next) =>
   next(
