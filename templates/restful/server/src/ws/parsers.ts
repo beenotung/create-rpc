@@ -1,4 +1,4 @@
-import { id, int, literal, object, optional, or, Parser, string } from 'cast.ts'
+import { id, int, literal, object, or, string } from 'cast.ts'
 import { saveWsTypes } from '../api'
 
 export let wsClientMessageParser = or([
