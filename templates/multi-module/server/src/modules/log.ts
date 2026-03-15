@@ -1,7 +1,5 @@
-import httpStatus from 'http-status'
 import { defModule } from '../api'
 import { db } from '../db'
-import { checkAdmin } from '../jwt'
 
 let apis = defModule({ name: 'log' })
 
@@ -51,6 +49,7 @@ where user.username like :username
 defAPI({
   name: 'getRecentLogs',
   jwt: true,
+  role: 'admin',
   sampleInput: { limit: 5, last_log_id: 0, username: 'alice' },
   sampleOutput: {
     users: [
@@ -66,7 +65,6 @@ defAPI({
     remains: 3,
   },
   fn(input, jwt) {
-    checkAdmin(jwt)
     let users = select_recent_log.all({
       username: '%' + input.username + '%',
       last_log_id: input.last_log_id,
