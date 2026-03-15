@@ -8,6 +8,13 @@ import { HttpError } from './error'
 import { checkAdmin, getJWT, JWTPayload } from './jwt'
 import { proxy } from './proxy'
 
+let clientDir = join('..', 'client', 'src', 'api')
+
+let configFile = join(clientDir, 'config.ts')
+
+let clientWsTypesFile = join(clientDir, 'ws-types.ts')
+let serverWsTypesFile = join('src', 'ws', 'types.ts')
+
 const emptyParser = object({})
 
 type Result<T> = T | Promise<T>
@@ -18,9 +25,7 @@ export function defModule(options: { name: string; apiPrefix?: string }) {
   let log = debug(moduleName)
   log.enabled = true
 
-  let dir = join('..', 'client', 'src', 'api')
-  let clientFile = join(dir, `${moduleName}.ts`)
-  let configFile = join(dir, 'config.ts')
+  let clientFile = join(clientDir, `${moduleName}.ts`)
 
   let router = Router()
   let apiPrefix = options.apiPrefix ?? `/api/${moduleName}`
@@ -228,4 +233,24 @@ function saveFile(options: { file: string; code: string }) {
   }
   writeFileSync(file, code)
   console.log('saved to', file)
+}
+
+export function saveWsTypes(args: {
+  wsClientMessageParser: Parser<object>
+  wsServerMessageParser: Parser<object>
+}) {
+  let code = `
+// This file is generated automatically
+// Don't edit this file directly
+
+export const Ping = '1'
+export const Pong = '2'
+export const Send = '3'
+
+export type WSClientMessage = ${args.wsClientMessageParser.type}
+
+export type WSServerMessage = ${args.wsServerMessageParser.type}
+`
+  saveFile({ file: clientWsTypesFile, code })
+  saveFile({ file: serverWsTypesFile, code })
 }

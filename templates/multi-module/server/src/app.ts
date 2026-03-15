@@ -3,6 +3,7 @@ import express, { Router } from 'express'
 import demo from './modules/demo'
 import log from './modules/log'
 import user from './modules/user'
+import chat from './modules/chat'
 import uploads from './uploads'
 
 export let app = express()
@@ -17,6 +18,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 attachApp(uploads)
+attachApp(chat)
 attachApp(demo)
 attachApp(log)
 attachApp(user)

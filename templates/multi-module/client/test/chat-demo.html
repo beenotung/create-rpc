@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Demo</title>
+    <style>
+      .sender::before {
+        content: '[';
+      }
+      .sender::after {
+        content: ']';
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Chat Demo</h1>
+    <section>
+      <h2>New Message</h2>
+      <div class="field">
+        <label for="roomIdInput">Room ID:</label>
+        <input type="text" id="roomIdInput" value="1" />
+      </div>
+      <div class="field">
+        <label for="messageInput">Message:</label>
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="You can send by enter key"
+        />
+        <button id="sendButton">Send</button>
+      </div>
+    </section>
+    <section>
+      <h2>Messages</h2>
+      <ul id="messageList">
+        <li class="message">
+          <span class="sender">Alice</span>
+          <span class="timestamp">2021-01-01 12:00:00</span>
+          <div class="content">Hello, world!</div>
+        </li>
+      </ul>
+    </section>
+    <script src="chat-demo.js"></script>
+  </body>
+</html>
