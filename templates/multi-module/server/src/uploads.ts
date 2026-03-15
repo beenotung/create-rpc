@@ -99,6 +99,7 @@ if (env.REMOTE_ORIGIN !== 'skip') {
 let uploads = {
   router,
   apiPrefix,
+  uploadDir,
 }
 
 export default uploads

@@ -1,4 +1,5 @@
 import { Application, ErrorRequestHandler } from 'express'
+
 export class HttpError extends Error {
   constructor(
     public statusCode: number,
