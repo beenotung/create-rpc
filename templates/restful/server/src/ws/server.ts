@@ -1,5 +1,5 @@
 /**
- * modified from wss-lite in ts-liveview
+ * Modified from wss-lite in ts-liveview
  */
 
 import type { Server } from 'ws'
