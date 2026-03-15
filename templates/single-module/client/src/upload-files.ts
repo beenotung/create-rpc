@@ -26,7 +26,16 @@ export async function uploadFiles(
     },
     body: formData,
   })
-  let json = await res.json()
+  let text = await res.text()
+  let json: UploadFilesOutput & { error?: string }
+  try {
+    json = JSON.parse(text)
+  } catch {
+    let error = res.status.toString()
+    if (res.statusText) error += ' ' + res.statusText
+    if (text) error += ': ' + text
+    throw error
+  }
   if (json.error) {
     throw json.error
   }

@@ -23,7 +23,18 @@ export function post(url: string, body: object, token_?: string) {
     },
     body: JSON.stringify(body),
   })
-    .then(res => res.json())
+    .then(res =>
+      res.text().then(text => {
+        try {
+          return JSON.parse(text)
+        } catch {
+          let error = res.status.toString()
+          if (res.statusText) error += ' ' + res.statusText
+          if (text) error += ': ' + text
+          return { error }
+        }
+      }),
+    )
     .catch(err => ({ error: String(err) }))
     .then(json => {
       if (json.error) {
