@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "db:ui": "erd-ui erd.txt",
     "db:setup": "knex migrate:latest && ts-node seed.ts",
     "db:dev": "run-s db:update db:plan db:update",
     "db:plan": "auto-migrate db.sqlite3 < erd.txt",
